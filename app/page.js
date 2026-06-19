@@ -4,11 +4,9 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import BookingWidget from '@/components/BookingWidget';
-import FinalCTA from '@/components/FinalCTA';
 import Footer from '@/components/Footer';
 import Gallery from '@/components/Gallery';
 import LocationSpotlight from '@/components/LocationSpotlight';
-import ArenaSpecs from '@/components/ArenaSpecs';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function Home() {
@@ -105,9 +103,6 @@ export default function Home() {
                 turfDetails={turfDetails}
               />
 
-              {/* Arena Specifications */}
-              <ArenaSpecs turfDetails={turfDetails} />
-
               {/* Specifications spotlights */}
               <LocationSpotlight 
                 onBookClick={() => changeView('booking')} 
@@ -116,9 +111,6 @@ export default function Home() {
 
               {/* Image galleries */}
               <Gallery turfDetails={turfDetails} />
-
-              {/* Booking CTA section */}
-              <FinalCTA onBookClick={() => changeView('booking')} />
             </motion.div>
           ) : (
             <motion.div
