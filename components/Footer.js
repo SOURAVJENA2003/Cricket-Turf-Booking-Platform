@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Trophy } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Footer({ turfDetails }) {
   const currentYear = new Date().getFullYear();
@@ -18,55 +19,14 @@ export default function Footer({ turfDetails }) {
   const badgeName = nameParts.length > 2 ? nameParts.slice(2).join(" ") : "ARENA";
 
   return (
-    <footer className="bg-slate-50 text-pitch-slate-500 py-12 md:py-16 border-t border-slate-200 relative overflow-hidden font-sans">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <footer className="bg-slate-50 text-pitch-slate-500 py-10 border-t border-slate-200 font-sans text-left">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
-        {/* Arena Specifications Block */}
-        <div className="border-b border-slate-200 pb-10 mb-10 text-left">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-            <div>
-              <h3 className="text-xs font-black text-pitch-charcoal uppercase tracking-widest">
-                Arena Specifications
-              </h3>
-              <p className="text-xs text-pitch-slate-650 mt-1.5 max-w-3xl leading-relaxed">
-                {description} Operating daily from <strong>{openTime} to {closeTime}</strong>.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white border border-slate-200/80 p-4 rounded-xl shadow-xs text-left">
-              <span className="text-[9px] font-black text-pitch-slate-400 uppercase tracking-wider block">Turf Surface</span>
-              <span className="text-xs font-extrabold text-pitch-charcoal mt-1.5 block leading-normal">
-                Premium Cushioned Synthetic AstroTurf Matting
-              </span>
-            </div>
-            <div className="bg-white border border-slate-200/80 p-4 rounded-xl shadow-xs text-left">
-              <span className="text-[9px] font-black text-pitch-slate-400 uppercase tracking-wider block">Dimensions</span>
-              <span className="text-xs font-extrabold text-pitch-charcoal mt-1.5 block leading-normal">
-                120ft x 70ft (Standard Championship Box)
-              </span>
-            </div>
-            <div className="bg-white border border-slate-200/80 p-4 rounded-xl shadow-xs text-left">
-              <span className="text-[9px] font-black text-pitch-slate-400 uppercase tracking-wider block">Capacity Limit</span>
-              <span className="text-xs font-extrabold text-pitch-charcoal mt-1.5 block leading-normal">
-                Up to 14 players (6v6 / 7v7 matches)
-              </span>
-            </div>
-            <div className="bg-white border border-slate-200/80 p-4 rounded-xl shadow-xs text-left">
-              <span className="text-[9px] font-black text-pitch-slate-400 uppercase tracking-wider block">Lighting System</span>
-              <span className="text-xs font-extrabold text-pitch-charcoal mt-1.5 block leading-normal">
-                Professional Zero-Shadow High-Lux LED Rig
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           
-          {/* Column 1 - Brand Summary */}
-          <div className="md:col-span-4 space-y-4 text-left">
-            <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          {/* Brand Column */}
+          <div className="md:col-span-7 space-y-4">
+            <div className="flex items-center space-x-2.5">
               <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 text-emerald-600">
                 <Trophy className="w-4.5 h-4.5" />
               </div>
@@ -78,19 +38,24 @@ export default function Footer({ turfDetails }) {
               </span>
             </div>
             
-            <p className="text-xs text-pitch-slate-500 leading-relaxed max-w-sm font-sans">
-              {description} Equipped with night floodlight illumination, automated gate PIN passcodes, and elite box cricket specifications.
+            <p className="text-xs text-pitch-slate-500 max-w-lg leading-relaxed">
+              {description} Fully equipped with zero-shadow night illumination and automated gate passcodes.
             </p>
 
-            {/* Dynamic Social & WhatsApp Contacts */}
-            <div className="flex space-x-2.5 pt-1">
+            <div className="text-[11px] text-pitch-slate-600 space-y-1">
+              <p><strong>Hours:</strong> {openTime} – {closeTime} (Open Daily)</p>
+              <p className="truncate max-w-md"><strong>Address:</strong> {address}</p>
+            </div>
+
+            {/* Social Links */}
+            <div className="flex space-x-2 pt-1">
               {turfDetails?.instagramUrl && (
                 <a 
                   href={turfDetails.instagramUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-450 hover:text-emerald-600 hover:border-emerald-300 transition-all cursor-pointer"
-                  title="Instagram Page"
+                  className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-emerald-605 hover:border-emerald-300 transition-all cursor-pointer"
+                  title="Instagram"
                 >
                   <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                 </a>
@@ -100,8 +65,8 @@ export default function Footer({ turfDetails }) {
                   href={`https://wa.me/${turfDetails.whatsappNumber}`} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-450 hover:text-emerald-600 hover:border-emerald-300 transition-all cursor-pointer"
-                  title="WhatsApp Contact"
+                  className="w-7 h-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-emerald-605 hover:border-emerald-300 transition-all cursor-pointer"
+                  title="WhatsApp"
                 >
                   <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                 </a>
@@ -109,46 +74,42 @@ export default function Footer({ turfDetails }) {
             </div>
           </div>
 
-          {/* Column 2 - Nets Specifications */}
-          <div className="md:col-span-3 space-y-3 text-left">
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-pitch-charcoal">Arena Nets</h4>
-            <ul className="space-y-2 text-xs">
-              <li className="hover:text-emerald-600 transition-colors">🏏 Net #1: Pro Swing AstroTurf</li>
-              <li className="hover:text-emerald-600 transition-colors">🏏 Net #2: Spin Master Hybrid</li>
-              <li className="hover:text-emerald-600 transition-colors">🏏 Net #3: Auto Bowling Machine</li>
-              <li className="hover:text-emerald-600 transition-colors">🏏 Net #4: High-Lux Match Net</li>
-            </ul>
-          </div>
+          {/* Quick Links Column */}
+          <div className="md:col-span-5 grid grid-cols-2 gap-6 w-full">
+            <div>
+              <h4 className="text-[10px] font-black uppercase tracking-wider text-pitch-charcoal mb-2">Portal</h4>
+              <ul className="space-y-1.5 text-[11px] font-bold">
+                <li>
+                  <Link href="/cancel" className="hover:text-emerald-650 hover:text-emerald-600 transition-colors">Cancel Booking</Link>
+                </li>
+                <li>
+                  <Link href="/admin/login" className="hover:text-emerald-655 hover:text-emerald-600 transition-colors">Admin Login</Link>
+                </li>
+                {turfDetails?.googleMaps && (
+                  <li>
+                    <a href={turfDetails.googleMaps} target="_blank" rel="noopener noreferrer" className="hover:text-emerald-650 hover:text-emerald-600 transition-colors">Interactive Map</a>
+                  </li>
+                )}
+              </ul>
+            </div>
 
-          {/* Column 3 - Features Platform */}
-          <div className="md:col-span-2 space-y-3 text-left">
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-pitch-charcoal">Offerings</h4>
-            <ul className="space-y-2 text-xs font-sans">
-              <li className="hover:text-emerald-650 transition-colors">Online Booking</li>
-              <li className="hover:text-emerald-650 transition-colors">Floodlight Access</li>
-              <li className="hover:text-emerald-650 transition-colors">Ground Addons</li>
-              <li className="hover:text-emerald-650 transition-colors">PIN Passcodes</li>
-            </ul>
-          </div>
-
-          {/* Column 4 - Standards */}
-          <div className="md:col-span-3 space-y-3 text-left">
-            <h4 className="text-[10px] font-bold uppercase tracking-wider text-pitch-charcoal">Quality Assurance</h4>
-            <p className="text-xs text-pitch-slate-500 leading-relaxed font-sans">
-              Our turfs are designed to international box cricket standards. We use certified sub-base foam layers to absorb shock and protect your knees from intensive play.
-            </p>
+            <div>
+              <h4 className="text-[10px] font-black uppercase tracking-wider text-pitch-charcoal mb-2">Contact Support</h4>
+              <ul className="space-y-1 text-[11px] font-mono text-pitch-slate-600">
+                {turfDetails?.phone && <li>Phone: {turfDetails.phone}</li>}
+                {turfDetails?.email && <li className="truncate max-w-[150px]" title={turfDetails.email}>Email: {turfDetails.email}</li>}
+              </ul>
+            </div>
           </div>
 
         </div>
 
-        {/* Closing Row */}
-        <div className="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row sm:justify-between items-center text-[11px] text-pitch-slate-500 gap-4">
-          <div>
-            © {currentYear} {name}. Powered by CreasePro. All rights reserved.
-          </div>
-          <div className="flex space-x-4">
-            <span className="hover:text-pitch-charcoal transition-colors cursor-pointer">Terms of Service</span>
-            <span className="hover:text-pitch-charcoal transition-colors cursor-pointer">Privacy Policy</span>
+        {/* Footer copyright */}
+        <div className="mt-8 pt-5 border-t border-slate-200 flex flex-col sm:flex-row sm:justify-between items-center text-[10px] text-pitch-slate-400 gap-3">
+          <p>© {currentYear} {name}. All rights reserved.</p>
+          <div className="flex space-x-3.5">
+            <span className="hover:text-pitch-charcoal transition-colors cursor-pointer">Terms</span>
+            <span className="hover:text-pitch-charcoal transition-colors cursor-pointer">Privacy</span>
             <span className="hover:text-pitch-charcoal transition-colors cursor-pointer">Refund Rules</span>
           </div>
         </div>
