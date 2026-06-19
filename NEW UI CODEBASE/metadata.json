@@ -1,0 +1,6 @@
+{
+  "name": "Cricket Turf Booking Platform",
+  "description": "Premium booking and slot management platform for Runmakers Arena Box Cricket in Jeypore, Odisha. Complete with schedules, ratings, directions, and instant confirmations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
