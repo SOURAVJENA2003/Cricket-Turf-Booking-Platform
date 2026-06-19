@@ -21,7 +21,7 @@ export default function FinalCTA({ onBookClick }) {
             </span>
 
             {/* Headline */}
-            <h2 className="text-2xl sm:text-3.5xl font-display font-black text-pitch-charcoal tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black text-pitch-charcoal tracking-tight leading-tight">
               Ready to Hit the Pitch?
             </h2>
 

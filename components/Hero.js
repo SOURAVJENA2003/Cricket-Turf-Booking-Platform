@@ -48,7 +48,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           {/* Premium display headings */}
-          <h1 className="text-xl sm:text-3xl lg:text-[46px] font-display font-extrabold text-pitch-charcoal tracking-tight leading-[1.12]">
+          <h1 className="text-3xl sm:text-5xl lg:text-[56px] font-display font-extrabold text-pitch-charcoal tracking-tight leading-[1.12]">
             Hit Runs in Style at <br />
             <span className="bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 bg-clip-text text-transparent">
               {name}

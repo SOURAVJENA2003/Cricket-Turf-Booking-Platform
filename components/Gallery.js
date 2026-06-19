@@ -1,12 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Camera, Eye, X, ZoomIn, Info } from 'lucide-react';
 
 export default function Gallery({ turfDetails }) {
   const [filter, setFilter] = useState('all');
   const [selectedItem, setSelectedItem] = useState(null);
+
+  useEffect(() => {
+    if (selectedItem) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedItem]);
 
   const name = turfDetails?.name || "Runmakers Arena Box Cricket";
 
@@ -52,27 +63,6 @@ export default function Gallery({ turfDetails }) {
       title: "Dynamic Target Training Nets",
       description: "Specialized side nets and bowling machines designed for batting drills, batting angle training, and solo team practices.",
       url: "/gallery_6.jpg"
-    },
-    {
-      id: 'img-7',
-      category: 'gear',
-      title: "Heavy Tennis & Leather Tournaments",
-      description: "Ready for customized formats. We support both high-impact corporate tennis balls and classic leather cricket matches.",
-      url: "/gallery_7.jpg"
-    },
-    {
-      id: 'img-8',
-      category: 'action',
-      title: "Team Dugouts & Refreshments",
-      description: "Spacious under-canopy seating space for team members to strategize, monitor live scorecards, and rest in style.",
-      url: "/gallery_8.jpg"
-    },
-    {
-      id: 'img-9',
-      category: 'turf',
-      title: "Overhead Canopy Rain Cover",
-      description: "Our retractable all-weather sheet keeps the arena active during monsoons, facilitating true rain-or-shine cricket sessions.",
-      url: "/gallery_9.jpg"
     }
   ];
 
@@ -89,13 +79,10 @@ export default function Gallery({ turfDetails }) {
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 flex flex-col items-center">
-          <h2 className="text-3xl sm:text-4xl font-display font-extrabold tracking-tight bg-gradient-to-r from-pitch-charcoal via-slate-800 to-slate-900 bg-clip-text text-transparent">
+          <h2 className="text-4xl sm:text-5xl font-display font-extrabold tracking-tight bg-gradient-to-r from-pitch-charcoal via-slate-800 to-slate-900 bg-clip-text text-transparent">
             {name.split(" ").slice(0, 2).join(" ")} Match Visuals
           </h2>
-          <div className="w-12 h-1 bg-emerald-600 rounded-full mt-3.5 mb-2" />
-          <p className="text-xs sm:text-sm text-pitch-slate-550 mt-1.5 leading-relaxed max-w-xl font-medium">
-            Take a visual tour of our premier turf, custom lighting systems, top-tier match gear, and active game atmosphere.
-          </p>
+          <div className="w-12 h-1 bg-emerald-600 rounded-full mt-3.5" />
         </div>
 
         {/* Filter Navigation Tabs */}
