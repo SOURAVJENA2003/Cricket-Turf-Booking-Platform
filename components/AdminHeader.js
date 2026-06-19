@@ -1,13 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LayoutDashboard, CalendarRange, Settings, LogOut, ExternalLink, Menu, X, Shield } from 'lucide-react';
 
 export default function AdminHeader({ activePage }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [turfName, setTurfName] = useState('CreasePro');
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch('/api/config');
+        const data = await response.json();
+        if (data.success && data.data?.turfDetails?.name) {
+          setTurfName(data.data.turfDetails.name);
+        }
+      } catch (err) {
+        console.error('Failed to load header brand settings:', err);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -30,6 +46,9 @@ export default function AdminHeader({ activePage }) {
     { id: 'settings', label: 'Settings', href: '/admin/settings', icon: Settings },
   ];
 
+  const nameParts = turfName.split(' ');
+  const mainName = nameParts.slice(0, 2).join(' ') || nameParts[0];
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 py-3.5 shadow-sm select-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,8 +59,8 @@ export default function AdminHeader({ activePage }) {
             <div className="flex items-center justify-center w-8.5 h-8.5 rounded-lg bg-emerald-500 text-white shadow-sm transition-transform duration-200 group-hover:scale-105">
               <Shield className="w-4.5 h-4.5" />
             </div>
-            <span className="text-sm font-display font-extrabold tracking-tight text-pitch-charcoal">
-              CREASEPRO
+            <span className="text-sm font-display font-extrabold tracking-tight text-pitch-charcoal uppercase">
+              {mainName}
               <span className="text-emerald-700 text-[9px] border border-emerald-250 px-1.5 py-0.5 rounded ml-1 bg-emerald-50 font-black font-sans uppercase">
                 CONSOLE
               </span>
