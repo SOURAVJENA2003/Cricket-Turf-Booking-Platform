@@ -89,10 +89,6 @@ export default function Gallery({ turfDetails }) {
         
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 flex flex-col items-center">
-          <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider px-3 py-1 bg-emerald-50 border border-emerald-150 rounded-full mb-3 flex items-center gap-1.5">
-            <Camera className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-            Arena Showcase
-          </span>
           <h2 className="text-3xl sm:text-4xl font-display font-extrabold text-pitch-charcoal tracking-tight">
             {name.split(" ").slice(0, 2).join(" ")} Match Visuals
           </h2>
