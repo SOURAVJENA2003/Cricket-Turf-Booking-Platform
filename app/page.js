@@ -17,8 +17,24 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [completedBookingId, setCompletedBookingId] = useState(null); // Replaces successMessage
+  const [turfDetails, setTurfDetails] = useState(null);
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await fetch('/api/config');
+        const data = await response.json();
+        if (data.success && data.data.turfDetails) {
+          setTurfDetails(data.data.turfDetails);
+        }
+      } catch (err) {
+        console.error('Failed to load turf config:', err);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -111,7 +127,7 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <header className={styles.header}>
-        <h1>Cricket Turf Booking</h1>
+        <h1>{turfDetails ? turfDetails.name : 'Cricket Turf Booking'}</h1>
         <nav className={styles.nav}>
           <Link href="/cancel" className={styles.navLink}>Cancel Booking</Link>
           <Link href="/admin/login" className={styles.navLink}>Admin Login</Link>
@@ -157,6 +173,19 @@ export default function Home() {
           bookingId={completedBookingId}
           onClose={handleCloseSuccessModal}
         />
+      )}
+
+      {turfDetails && (
+        <footer className={styles.footer} style={{ marginTop: '40px', padding: '20px 0', borderTop: '1px solid var(--border)', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+          <p style={{ fontWeight: 'bold', fontSize: '1rem', color: 'var(--text)', marginBottom: '5px' }}>{turfDetails.name}</p>
+          <p style={{ marginBottom: '5px' }}>{turfDetails.address}</p>
+          <p style={{ marginBottom: '10px' }}>Hours: {turfDetails.openTime} - {turfDetails.closeTime}</p>
+          <p>
+            <a href={turfDetails.googleMaps} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'underline' }}>
+              View on Google Maps
+            </a>
+          </p>
+        </footer>
       )}
     </main>
   );
