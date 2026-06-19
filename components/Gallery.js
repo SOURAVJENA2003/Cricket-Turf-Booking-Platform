@@ -81,7 +81,7 @@ export default function Gallery({ turfDetails }) {
     : galleryItems.filter(item => item.category === filter);
 
   return (
-    <section id="arena-gallery" className="bg-transparent border-b border-slate-200/40 py-16 md:py-24 relative overflow-hidden font-sans">
+    <section id="arena-gallery" className="bg-slate-50 border-b border-slate-200/40 py-16 md:py-24 relative overflow-hidden font-sans">
       <div className="absolute top-1/3 right-0 w-80 h-80 bg-emerald-100/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-amber-50/20 rounded-full blur-[100px] pointer-events-none" />
 

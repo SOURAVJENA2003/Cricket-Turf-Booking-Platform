@@ -7,10 +7,10 @@
 
   /* Off-whites, slate grays, and precise athletic greens */
   --color-pitch-white: #ffffff;
-  --color-pitch-canvas: transparent;
+  --color-pitch-canvas: #f8fafc;
   --color-pitch-slate-50: #f1f5f9;
   --color-pitch-slate-300: #cbd5e1;
-  --color-pitch-slate-500: #64748b;
+  --color-pitch-slate-550: #64748b;
   --color-pitch-slate-800: #1e293b;
   --color-pitch-charcoal: #0f172a;
   
@@ -25,22 +25,26 @@
 
 @layer base {
   body {
-    background-color: #f6f8fc;
-    background-image: 
-      radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.07) 0%, transparent 45%), 
-      radial-gradient(circle at 90% 15%, rgba(59, 130, 246, 0.06) 0%, transparent 45%), 
-      radial-gradient(circle at 50% 80%, rgba(245, 158, 11, 0.04) 0%, transparent 50%),
-      linear-gradient(rgba(226, 232, 240, 0.5) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(226, 232, 240, 0.5) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 100% 100%, 30px 30px, 30px 30px;
-    background-attachment: fixed, fixed, fixed, scroll, scroll;
-    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat;
+    background-color: #fafbfd;
     color: var(--color-pitch-slate-800);
     font-family: var(--font-sans);
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+}
+
+.hero-glow-bg {
+  background-color: #f6f8fc;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.07) 0%, transparent 45%), 
+    radial-gradient(circle at 90% 15%, rgba(59, 130, 246, 0.06) 0%, transparent 45%), 
+    radial-gradient(circle at 50% 80%, rgba(245, 158, 11, 0.04) 0%, transparent 50%),
+    linear-gradient(rgba(226, 232, 240, 0.55) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(226, 232, 240, 0.55) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+  background-attachment: fixed, fixed, fixed, scroll, scroll;
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat;
 }
 
 /* Perfect crisp modern scrolls */

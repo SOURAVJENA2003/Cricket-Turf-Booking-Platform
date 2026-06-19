@@ -5,7 +5,7 @@ import { Calendar, Sparkles } from 'lucide-react';
 
 export default function FinalCTA({ onBookClick }) {
   return (
-    <section className="bg-transparent py-16 md:py-24 font-sans border-b border-slate-200/40 text-center">
+    <section className="bg-white py-16 md:py-24 font-sans border-b border-slate-200/40 text-center">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         
         {/* Modern Minimalist Light Card */}

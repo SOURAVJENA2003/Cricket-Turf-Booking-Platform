@@ -29,7 +29,7 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
   const closeTime = turfDetails?.closeTime || "23:00";
 
   return (
-    <section id="location-specs" className="bg-transparent border-b border-slate-200/40 py-10 md:py-16 relative overflow-hidden font-sans text-left">
+    <section id="location-specs" className="bg-white border-b border-slate-200/40 py-10 md:py-16 relative overflow-hidden font-sans text-left">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         

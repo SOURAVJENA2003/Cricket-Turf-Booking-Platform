@@ -36,7 +36,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
   const closeTime = turfDetails?.closeTime || "23:00";
 
   return (
-    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-transparent border-b border-slate-200/40 font-sans">
+    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden hero-glow-bg border-b border-slate-200/40 font-sans">
       {/* Decorative premium background meshes */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-50/40 rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-amber-50/30 rounded-full blur-[120px] pointer-events-none" />
