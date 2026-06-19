@@ -9,7 +9,7 @@ export async function GET(request) {
   const date = searchParams.get('date');
 
   if (!date) {
-    return NextResponse.json({ error: 'Date is required' }, { status: 400 });
+    return NextResponse.json({ success: false, message: 'Date is required' }, { status: 400 });
   }
 
   try {
@@ -48,9 +48,9 @@ export async function GET(request) {
       );
     }
     
-    return NextResponse.json(result.rows);
+    return NextResponse.json({ success: true, data: result.rows });
   } catch (error) {
     console.error('Database error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }

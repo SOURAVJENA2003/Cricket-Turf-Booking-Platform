@@ -10,11 +10,11 @@ export async function POST(request) {
 
     if (!adminEmail || !adminPasswordHash) {
       console.error('Missing ADMIN_EMAIL or ADMIN_PASSWORD_HASH in environment variables.');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+      return NextResponse.json({ success: false, message: 'Server configuration error' }, { status: 500 });
     }
 
     if (email !== adminEmail || !verifyPassword(password, adminPasswordHash)) {
-      return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Invalid email or password' }, { status: 401 });
     }
 
     // Set expiration to 24 hours from now
@@ -22,10 +22,15 @@ export async function POST(request) {
     const token = await signToken({ email, exp: expirationTime });
 
     if (!token) {
-      return NextResponse.json({ error: 'Failed to generate session' }, { status: 500 });
+      return NextResponse.json({ success: false, message: 'Failed to generate session' }, { status: 500 });
     }
 
-    const response = NextResponse.json({ success: true, message: 'Logged in successfully' });
+    const response = NextResponse.json({
+      success: true,
+      data: {
+        message: 'Logged in successfully'
+      }
+    });
 
     // Set session cookie
     response.cookies.set('admin_session', token, {
@@ -39,6 +44,6 @@ export async function POST(request) {
     return response;
   } catch (error) {
     console.error('Login API error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }

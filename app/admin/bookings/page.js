@@ -1,6 +1,7 @@
 import db from '@/lib/db';
 const { query } = db;
 import Link from 'next/link';
+import { formatLocalDateString, formatIstTimestamp } from '@/lib/date-utils';
 import styles from './page.module.css';
 
 // Opt out of caching so we always fetch fresh database records
@@ -56,8 +57,8 @@ export default async function AdminBookingsPage() {
             <tbody>
               {bookings.map((b) => (
                 <tr key={b.id}>
-                  <td>{new Date(b.created_at).toLocaleDateString()}</td>
-                  <td>{new Date(b.date).toLocaleDateString()}</td>
+                  <td>{formatIstTimestamp(b.created_at)}</td>
+                  <td>{formatLocalDateString(b.date)}</td>
                   <td>{b.start_time} - {b.end_time}</td>
                   <td><code>{b.booking_group_id || 'Admin Offline'}</code></td>
                   <td>{b.customer_name}</td>

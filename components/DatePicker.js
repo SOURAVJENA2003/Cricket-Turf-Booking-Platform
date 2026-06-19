@@ -1,12 +1,8 @@
 import styles from './DatePicker.module.css';
+import { getIstDateList, formatDatePickerLabel } from '@/lib/date-utils';
 
 export default function DatePicker({ selectedDate, onDateChange }) {
-  const dates = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    dates.push(d.toLocaleDateString('en-CA'));
-  }
+  const dates = getIstDateList();
 
   return (
     <div className={styles.container}>
@@ -19,7 +15,7 @@ export default function DatePicker({ selectedDate, onDateChange }) {
       >
         {dates.map((date) => (
           <option key={date} value={date}>
-            {new Date(date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
+            {formatDatePickerLabel(date)}
           </option>
         ))}
       </select>

@@ -10,7 +10,7 @@ export async function proxy(request) {
   // 1. API admin route protection
   if (pathname.startsWith('/api/admin') && pathname !== '/api/admin/login' && pathname !== '/api/admin/logout') {
     if (!verified) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
   }
 

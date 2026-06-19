@@ -2,7 +2,7 @@ require('dotenv').config();
 const { query } = require('../lib/db');
 
 async function updatePrices() {
-  const newPrice = 20.00; // Change this value to your desired price
+  const newPrice = parseFloat(process.env.DEFAULT_SLOT_PRICE);
 
   try {
     console.log(`Updating all existing slots to ₹${newPrice}...`);

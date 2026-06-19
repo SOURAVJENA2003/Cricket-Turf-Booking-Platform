@@ -6,10 +6,11 @@ import DatePicker from '@/components/DatePicker';
 import SlotGrid from '@/components/SlotGrid';
 import BookingModal from '@/components/BookingModal';
 import SuccessModal from '@/components/SuccessModal';
+import { getIstTodayString } from '@/lib/date-utils';
 import styles from './page.module.css';
 
 export default function Home() {
-  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString('en-CA'));
+  const [selectedDate, setSelectedDate] = useState(getIstTodayString());
   const [slots, setSlots] = useState([]);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,13 +27,13 @@ export default function Home() {
         const response = await fetch(`/api/slots?date=${selectedDate}`);
         const data = await response.json();
         if (active) {
-          if (response.ok) {
-            setSlots(data);
-            if (data.length === 0) {
+          if (response.ok && data.success) {
+            setSlots(data.data);
+            if (data.data.length === 0) {
               setError('No slots found for this date. Please ensure the database is seeded.');
             }
           } else {
-            setError(data.error || 'Failed to fetch slots');
+            setError(data.message || 'Failed to fetch slots');
           }
         }
       } catch (error) {

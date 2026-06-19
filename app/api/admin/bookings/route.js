@@ -13,13 +13,13 @@ async function isAuthenticated(request) {
 export async function PATCH(request) {
   try {
     if (!(await isAuthenticated(request))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
     const { slotId, status } = await request.json();
 
     if (!slotId || !status) {
-      return NextResponse.json({ error: 'Slot ID and Status are required' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Slot ID and Status are required' }, { status: 400 });
     }
 
     // Only update pending active bookings for that slot
@@ -28,23 +28,28 @@ export async function PATCH(request) {
       [status, slotId]
     );
 
-    return NextResponse.json({ message: `Booking status updated to ${status}` });
+    return NextResponse.json({
+      success: true,
+      data: {
+        message: `Booking status updated to ${status}`
+      }
+    });
   } catch (error) {
     console.error('Admin update error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }
 
 export async function POST(request) {
   try {
     if (!(await isAuthenticated(request))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
     const { slotId } = await request.json();
 
     if (!slotId) {
-      return NextResponse.json({ error: 'Slot ID is required' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Slot ID is required' }, { status: 400 });
     }
 
     await query('BEGIN');
@@ -62,12 +67,12 @@ export async function POST(request) {
 
     if (slotCheck.rows.length === 0) {
       await query('ROLLBACK');
-      return NextResponse.json({ error: 'Slot not found' }, { status: 404 });
+      return NextResponse.json({ success: false, message: 'Slot not found' }, { status: 404 });
     }
 
     if (slotCheck.rows[0].is_booked) {
       await query('ROLLBACK');
-      return NextResponse.json({ error: 'Slot is already booked or pending' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Slot is already booked or pending' }, { status: 400 });
     }
 
     // Admin marks slot as booked (defaults to 'confirmed' status for offline block)
@@ -80,25 +85,30 @@ export async function POST(request) {
 
     await query('COMMIT');
 
-    return NextResponse.json({ message: 'Slot marked as booked by Admin' });
+    return NextResponse.json({
+      success: true,
+      data: {
+        message: 'Slot marked as booked by Admin'
+      }
+    });
 
   } catch (error) {
     await query('ROLLBACK');
     console.error('Admin booking error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }
 
 export async function DELETE(request) {
   try {
     if (!(await isAuthenticated(request))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
     }
 
     const { slotId } = await request.json();
 
     if (!slotId) {
-      return NextResponse.json({ error: 'Slot ID is required' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Slot ID is required' }, { status: 400 });
     }
 
     await query('BEGIN');
@@ -113,11 +123,16 @@ export async function DELETE(request) {
 
     await query('COMMIT');
 
-    return NextResponse.json({ message: 'Slot cleared by Admin' });
+    return NextResponse.json({
+      success: true,
+      data: {
+        message: 'Slot cleared by Admin'
+      }
+    });
 
   } catch (error) {
     await query('ROLLBACK');
     console.error('Admin clear error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }

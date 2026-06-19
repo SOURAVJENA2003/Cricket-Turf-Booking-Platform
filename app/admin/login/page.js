@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
 
       const data = await response.json();
 
-      if (response.ok) {
+      if (response.ok && data.success) {
         // Authenticated! Clean client-side localStorage.
         localStorage.removeItem('admin_password'); // Remove old insecure storage if it exists
         
@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
         router.push('/admin');
         router.refresh(); // Refresh router state to ensure middleware picks up the new cookie
       } else {
-        setError(data.error || 'Login failed');
+        setError((data && data.message) || 'Login failed');
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

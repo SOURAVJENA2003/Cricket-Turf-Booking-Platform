@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import styles from './BookingModal.module.css';
+import { formatLocalDateString } from '@/lib/date-utils';
 
 export default function BookingModal({ slots, onClose, onBookingSuccess }) {
   const [name, setName] = useState('');
@@ -18,7 +19,7 @@ export default function BookingModal({ slots, onClose, onBookingSuccess }) {
        try {
          const res = await fetch('/api/config');
          const data = await res.json();
-         setUpiDetails(data);
+         setUpiDetails(data.success ? data.data : { id: 'owner@upi', name: 'Turf Owner' });
        } catch(e) {
          setUpiDetails({ id: 'owner@upi', name: 'Turf Owner' });
        }
@@ -63,10 +64,10 @@ export default function BookingModal({ slots, onClose, onBookingSuccess }) {
 
       const data = await response.json();
 
-      if (response.ok) {
-        onBookingSuccess(data.bookingGroupId);
+      if (response.ok && data.success) {
+        onBookingSuccess(data.data.bookingGroupId);
       } else {
-        setError(data.error || 'Failed to submit booking');
+        setError(data.message || 'Failed to submit booking');
       }
     } catch (err) {
       setError('Something went wrong');
@@ -82,7 +83,7 @@ export default function BookingModal({ slots, onClose, onBookingSuccess }) {
         
         <div className={styles.slotInfo}>
           <p><strong>Slots:</strong> {slots[0].start_time} - {slots[slots.length-1].end_time}</p>
-          <p><strong>Date:</strong> {new Date(slots[0].date).toLocaleDateString()}</p>
+          <p><strong>Date:</strong> {formatLocalDateString(slots[0].date)}</p>
           <p><strong>Total Price:</strong> ₹{totalPrice}</p>
         </div>
         

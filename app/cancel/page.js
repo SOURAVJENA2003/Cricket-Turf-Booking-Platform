@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { formatLocalDateString } from '@/lib/date-utils';
 import styles from './page.module.css';
 
 export default function CancelPage() {
@@ -24,15 +25,15 @@ export default function CancelPage() {
       const response = await fetch(`/api/bookings?groupId=${groupId}&phone=${phone}`);
       const data = await response.json();
 
-      if (response.ok) {
-        if (data.length === 0) {
+      if (response.ok && data.success) {
+        if (data.data.length === 0) {
           setError('No bookings found with these details.');
         } else {
-          setBookings(data);
+          setBookings(data.data);
           setStep(2);
         }
       } else {
-        setError(data.error || 'Failed to find bookings');
+        setError(data.message || 'Failed to find bookings');
       }
     } catch (err) {
       setError('Something went wrong');
@@ -55,7 +56,9 @@ export default function CancelPage() {
         body: JSON.stringify({ bookingIds: selectedBookings, phone }),
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         setMessage('Selected slots cancelled successfully!');
         setBookings(bookings.filter(b => !selectedBookings.includes(b.booking_id)));
         setSelectedBookings([]);
@@ -65,8 +68,7 @@ export default function CancelPage() {
           setPhone('');
         }
       } else {
-        const data = await response.json();
-        setError(data.error || 'Failed to cancel');
+        setError(data.message || 'Failed to cancel');
       }
     } catch (err) {
       setError('Something went wrong');
@@ -138,7 +140,7 @@ export default function CancelPage() {
                 </div>
                 <div className={styles.info}>
                   <strong>{booking.start_time} - {booking.end_time}</strong>
-                  <span>{new Date(booking.date).toLocaleDateString()}</span>
+                  <span>{formatLocalDateString(booking.date)}</span>
                 </div>
                 <div className={styles.price}>₹{booking.price}</div>
               </div>

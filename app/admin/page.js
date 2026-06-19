@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DatePicker from '@/components/DatePicker';
+import { getIstTodayString } from '@/lib/date-utils';
 import styles from './page.module.css';
 
 export default function AdminDashboard() {
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(getIstTodayString());
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -24,8 +25,8 @@ export default function AdminDashboard() {
           return;
         }
         const data = await response.json();
-        if (active && response.ok) {
-          setSlots(data);
+        if (active && response.ok && data.success) {
+          setSlots(data.data);
         }
       } catch (error) {
         console.error('Error fetching slots:', error);
@@ -50,11 +51,12 @@ export default function AdminDashboard() {
   const handleLogout = async () => {
     try {
       const response = await fetch('/api/admin/logout', { method: 'POST' });
-      if (response.ok) {
+      const data = await response.json();
+      if (response.ok && data.success) {
         router.push('/admin/login');
         router.refresh();
       } else {
-        alert('Logout failed');
+        alert((data && data.message) || 'Logout failed');
       }
     } catch (err) {
       console.error('Logout error:', err);
@@ -78,12 +80,12 @@ export default function AdminDashboard() {
         body: JSON.stringify(body),
       });
 
-      if (response.ok) {
+      const data = await response.json();
+      if (response.ok && data.success) {
         setLoading(true);
         setRefreshTrigger(prev => prev + 1);
       } else {
-        const data = await response.json();
-        alert(data.error || 'Action failed');
+        alert(data.message || 'Action failed');
         if (response.status === 401) {
           router.push('/admin/login');
           router.refresh();
