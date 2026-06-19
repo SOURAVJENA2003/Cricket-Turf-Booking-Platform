@@ -5,17 +5,23 @@ import { QRCodeSVG } from 'qrcode.react';
 import { 
   Calendar as CalendarIcon, 
   MapPin, 
-  Check, 
   Clock, 
   ChevronRight,
   ArrowLeft,
   Sparkles,
   Lock,
-  Zap,
-  Info
+  Check,
+  User,
+  Phone,
+  ShieldCheck,
+  Info,
+  Printer,
+  CalendarDays,
+  Copy,
+  AlertCircle
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { getIstTodayString, formatLocalDateString } from '@/lib/date-utils';
+import { formatLocalDateString } from '@/lib/date-utils';
 
 export default function BookingWidget({ onBackToHome }) {
   // Calendar Dates: 5 days starting today
@@ -28,7 +34,6 @@ export default function BookingWidget({ onBackToHome }) {
       const d = new Date();
       d.setDate(d.getDate() + i);
       
-      // Format to local date string matching database format YYYY-MM-DD
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
@@ -68,6 +73,7 @@ export default function BookingWidget({ onBackToHome }) {
   // Error/Success and ticket records
   const [error, setError] = useState('');
   const [generatedTicket, setGeneratedTicket] = useState(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   // 1. Fetch Dynamic Configuration
   useEffect(() => {
@@ -144,7 +150,6 @@ export default function BookingWidget({ onBackToHome }) {
     const isAlreadySelected = selectedSlots.some(s => s.id === slot.id);
     
     if (isAlreadySelected) {
-      // Allow deselecting slot
       setSelectedSlots(selectedSlots.filter(s => s.id !== slot.id));
       return;
     }
@@ -154,7 +159,6 @@ export default function BookingWidget({ onBackToHome }) {
       return;
     }
 
-    // Enforce consecutive bookings
     const sortedSelected = [...selectedSlots, slot].sort((a, b) => a.start_time.localeCompare(b.start_time));
     let isConsecutive = true;
     for (let i = 0; i < sortedSelected.length - 1; i++) {
@@ -167,7 +171,6 @@ export default function BookingWidget({ onBackToHome }) {
     if (isConsecutive) {
       setSelectedSlots(sortedSelected);
     } else {
-      // Start a new selection if not consecutive
       setSelectedSlots([slot]);
     }
   };
@@ -184,8 +187,6 @@ export default function BookingWidget({ onBackToHome }) {
       } else if (startHour >= 21 || startHour < 6) {
         category = 'Night';
       }
-
-      // Pro LED lights premium check for evening/night sessions
       const isPeak = startHour >= 16 && startHour < 22;
 
       return {
@@ -263,7 +264,6 @@ export default function BookingWidget({ onBackToHome }) {
       if (response.ok && data.success) {
         setProcessingStep('Generating gate passcode stub...');
         setTimeout(() => {
-          // Generate ticket object
           const dateObj = calendarDates.find(c => c.isoString === selectedDateIso) || calendarDates[0];
           const randomPin = `${Math.floor(1000 + Math.random() * 9000)}`;
           
@@ -363,7 +363,7 @@ export default function BookingWidget({ onBackToHome }) {
           contact: phone,
         },
         theme: {
-          color: '#10b981',
+          color: '#0b573a',
         },
         modal: {
           ondismiss: function () {
@@ -390,68 +390,234 @@ export default function BookingWidget({ onBackToHome }) {
     setTransactionId('');
   };
 
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  };
+
   // UPI URL for QR code generation
   const upiId = config?.upiDetails?.id || config?.id || "owner@upi";
   const upiName = config?.upiDetails?.name || config?.name || "Turf Owner";
   const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${priceCalculation.finalTotal}&cu=INR&tn=Booking for ${selectedDateIso}`;
-
   const turfName = turfDetails?.name || "Runmakers Arena Box Cricket";
 
-  return (
-    <div className="py-6 md:py-12 bg-transparent min-h-screen text-pitch-slate-800 font-sans text-left">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        
-        {/* Navigation / Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-200">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={onBackToHome}
-              className="group flex items-center justify-center w-11 h-11 rounded-xl bg-white border border-slate-200 hover:border-slate-400 text-pitch-charcoal hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
-              title="Return to home page"
-            >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-            </button>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="flex items-center gap-1 text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-150 px-2 py-0.5 rounded-md font-bold tracking-wide uppercase">
-                  <Sparkles className="w-3 h-3 text-emerald-600" /> Slot Scheduler
-                </span>
-                <span className="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-100 rounded-md px-2 py-0.5">
-                  5.0 ★
-                </span>
-              </div>
-              <h1 className="text-xl sm:text-2xl font-display font-black text-pitch-charcoal mt-1 tracking-tight">
-                {turfName}
-              </h1>
-            </div>
-          </div>
+  const steps = [
+    { number: 1, label: 'Select Slots' },
+    { number: 2, label: 'Player Details' },
+    { number: 3, label: 'Verify & Pay' }
+  ];
 
-          <div className="flex gap-2 text-xs font-semibold">
-            <span className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-3 py-1.5 rounded-lg flex items-center">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse" />
-              Realtime Active
-            </span>
-            <span className="bg-slate-100 border border-slate-200 text-pitch-slate-700 px-3 py-1.5 rounded-lg flex items-center">
-              Base: ₹{turfDetails?.defaultSlotPrice || 1000}/hr
+  return (
+    <div className="py-8 md:py-16 bg-transparent min-h-screen text-pitch-slate-800 font-sans text-left relative overflow-hidden">
+      
+      {/* Dynamic Ambient Background Glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute bottom-1/4 left-1/3 w-[300px] h-[300px] bg-teal-500/5 rounded-full blur-[100px] pointer-events-none z-0" />
+
+      <div className="max-w-4xl mx-auto px-4 relative z-10">
+        
+        {/* Navigation & Standard Back Button */}
+        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200/50 select-none">
+          <button
+            onClick={onBackToHome}
+            className="group flex items-center gap-2 text-xs font-black uppercase tracking-wider text-pitch-charcoal hover:text-emerald-700 transition-colors"
+          >
+            <ArrowLeft className="w-4.5 h-4.5 group-hover:-translate-x-0.5 transition-transform" />
+            Exit Booking
+          </button>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] bg-emerald-550/10 border border-emerald-500/20 text-emerald-800 px-3 py-1 rounded-full font-extrabold shadow-3xs">
+              Stadium Price: ₹{turfDetails?.defaultSlotPrice || 1000}/hr
             </span>
           </div>
         </div>
 
-        {/* STEP 1: Slot Grid Schedule Picker */}
-        {step === 1 && checkoutStatus === 'idle' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-fade-in">
-            
-            {/* Left Column: Date & Slot Timings */}
-            <div className="lg:col-span-8 space-y-5">
+        {/* Master Steps Timeline Progress Indicator */}
+        {checkoutStatus !== 'done' && checkoutStatus !== 'processing' && (
+          <div className="max-w-md mx-auto mb-12 select-none px-4">
+            <div className="flex items-center justify-between relative">
+              {/* Timeline Connector Tracks */}
+              <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[2px] bg-slate-200 z-0" />
+              <div 
+                className="absolute left-0 top-1/2 -translate-y-1/2 h-[2px] bg-emerald-600 transition-all duration-500 z-0" 
+                style={{ width: `${((step - 1) / 2) * 100}%` }}
+              />
+              
+              {steps.map((s) => {
+                const isCompleted = step > s.number;
+                const isActive = step === s.number;
+                return (
+                  <div key={s.number} className="relative z-10 flex flex-col items-center">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 ${
+                      isCompleted 
+                        ? 'bg-emerald-650 text-white ring-4 ring-emerald-100' 
+                        : isActive 
+                          ? 'bg-emerald-650 text-white ring-4 ring-emerald-100 font-extrabold scale-110' 
+                          : 'bg-white border-2 border-slate-200 text-slate-400'
+                    }`}>
+                      {isCompleted ? <Check className="w-4 h-4 stroke-[3]" /> : s.number}
+                    </div>
+                    <span className={`text-[9px] uppercase tracking-wider font-extrabold mt-2.5 transition-colors ${
+                      isActive ? 'text-emerald-800 font-black' : isCompleted ? 'text-slate-650' : 'text-slate-400'
+                    }`}>
+                      {s.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
-              {/* DATE PICKER */}
-              <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-premium-soft hover:border-emerald-500/20 transition-all duration-300">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xs font-bold uppercase text-pitch-slate-400 tracking-wider">Select Play Date</h3>
-                  <span className="text-[10px] bg-slate-100 text-pitch-slate-650 px-2 py-0.5 rounded font-bold">5 Days Open</span>
+        {/* Dynamic Wizard Steps Switcher */}
+        <div>
+          {/* PROCESSING STATE SCREEN */}
+          {checkoutStatus === 'processing' && (
+            <div className="w-full p-6 sm:p-12 flex flex-col items-center justify-center min-h-[350px]">
+              <div className="min-h-[220px] flex flex-col items-center justify-center bg-white border border-slate-200/80 rounded-3xl py-8 px-6 max-w-sm w-full shadow-premium-tall relative overflow-hidden text-center animate-fade-in">
+                <div className="absolute top-0 inset-x-0 h-1.5 bg-emerald-600" />
+                
+                <div className="relative flex items-center justify-center w-12 h-12 rounded-full border border-slate-150 bg-slate-50 mb-4 animate-spin">
+                  <div className="absolute inset-1 rounded-full border-[3px] border-slate-200 border-t-emerald-600" />
                 </div>
 
-                <div className="grid grid-cols-5 gap-2">
+                <h3 className="text-sm font-black text-pitch-charcoal">
+                  Processing Reservation
+                </h3>
+                
+                <p className="text-[10px] font-mono text-emerald-700 mt-2.5 animate-pulse font-bold">
+                  {processingStep}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* SUCCESS SCREEN: TICKET ISSUANCE */}
+          {checkoutStatus === 'done' && generatedTicket && (
+            <div className="max-w-md mx-auto py-2">
+              <div className="bg-white border border-slate-200/80 shadow-premium-tall relative overflow-hidden rounded-[2.5rem] text-left transition-all duration-300">
+                <div className="h-2 bg-gradient-to-r from-emerald-600 to-teal-500" />
+                
+                <div className="p-6">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-black text-emerald-800 uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span>PIN ACTIVE</span>
+                      </span>
+                      <h3 className="text-lg font-display font-black text-pitch-charcoal mt-3.5 leading-none truncate max-w-[200px]" title={turfName}>
+                        {turfName}
+                      </h3>
+                      <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1 block">Stadium Arena Access Code</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest block">Group ID</span>
+                      <p className="text-xs font-mono font-black text-pitch-charcoal mt-1 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded">
+                        {generatedTicket.bookingGroupId}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Simulated ticket side punch holes and rip line */}
+                <div className="relative flex items-center my-1 select-none">
+                  <div className="w-5 h-5 rounded-full bg-[#fafbfd] absolute -left-2.5 border-r border-slate-200" />
+                  <div className="w-full border-b-2 border-dashed border-slate-200" />
+                  <div className="w-5 h-5 rounded-full bg-[#fafbfd] absolute -right-2.5 border-l border-slate-200" />
+                </div>
+
+                <div className="p-6 space-y-5">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-150 text-left flex flex-col justify-center">
+                      <span className="text-[9px] font-black text-slate-400 block uppercase tracking-wider">Play Date</span>
+                      <span className="text-xs font-display font-extrabold text-pitch-charcoal mt-1 block leading-tight">
+                        {generatedTicket.date}
+                      </span>
+                    </div>
+                    
+                    <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-150 text-center flex flex-col justify-center">
+                      <span className="text-[9px] font-black text-emerald-800 block uppercase tracking-wider">GATE ACCESS PIN</span>
+                      <span className="text-base font-mono font-black text-emerald-950 mt-1 block tracking-widest bg-white py-1 px-3 rounded-xl border border-emerald-200/50 shadow-2xs">
+                        🔒 {generatedTicket.accessPin} #
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Booked Timings list */}
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl text-left">
+                    <span className="text-[9px] font-black text-slate-400 block uppercase tracking-wider mb-2.5">Booked Timings</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {generatedTicket.slots.map((s, idx) => (
+                        <span key={idx} className="px-3 py-1 text-xs font-mono font-bold rounded-lg bg-white border border-slate-200 text-pitch-slate-800 flex items-center gap-1.5 shadow-3xs">
+                          <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Lock guidance instructions */}
+                  <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl text-[10px] text-slate-655 flex items-start gap-2.5 text-left">
+                    <Lock className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="text-pitch-charcoal block">Keypad activation</strong>
+                      Enter the PIN code followed by the hash `#` key at the door keypad. Your unique gate PIN authorizes entrance commencing 10 minutes prior to reservation. Normal sneakers or turf flats permitted.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Receipt invoice footer section */}
+                <div className="p-6 border-t border-slate-200 bg-slate-50/50 rounded-b-[2.5rem] flex flex-col items-center space-y-4">
+                  <div className="w-full flex justify-between items-baseline text-xs">
+                    <span className="font-extrabold text-slate-400 uppercase text-[9px] tracking-wider">
+                      UTR Status: {config?.paymentMode === 'razorpay' ? 'PAID' : 'PENDING VERIFICATION'}
+                    </span>
+                    <strong className="text-lg font-display font-black text-pitch-charcoal">₹{generatedTicket.price}</strong>
+                  </div>
+
+                  {/* SVG Check-in QR code */}
+                  <div className="w-full bg-white p-4 rounded-xl flex flex-col items-center space-y-2 border border-slate-150 select-none">
+                    <QRCodeSVG value={`https://cricket-turf-booking.com/ticket/${generatedTicket.bookingGroupId}`} size={110} />
+                    <span className="text-[8px] font-mono tracking-widest text-slate-400">TICKET-LOCK-{generatedTicket.bookingGroupId}</span>
+                  </div>
+
+                  <div className="w-full flex gap-2.5 pt-1">
+                    <button
+                      onClick={() => window.print()}
+                      className="flex-1 py-3 rounded-xl border border-slate-200 hover:border-slate-350 bg-white text-pitch-charcoal font-black text-[10px] uppercase tracking-wider transition-colors cursor-pointer text-center flex items-center justify-center gap-1.5"
+                    >
+                      <Printer className="w-3.5 h-3.5" />
+                      Print Pass
+                    </button>
+                    <button
+                      onClick={resetBooking}
+                      className="flex-1 py-3 rounded-xl bg-pitch-charcoal hover:bg-emerald-600 text-white font-black text-[10px] uppercase tracking-wider transition-colors cursor-pointer text-center"
+                    >
+                      New Booking
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 1: SCHEDULING (DATES & SLOTS SELECTOR) */}
+          {step === 1 && checkoutStatus === 'idle' && (
+            <div className="space-y-8 animate-fade-in">
+              
+              {/* Date selection row */}
+              <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-premium-soft">
+                <div className="flex items-center justify-between mb-4 select-none">
+                  <div>
+                    <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Select Play Date</h3>
+                    <p className="text-xs text-slate-500 mt-0.5 font-medium">Pick a day to view available bookings.</p>
+                  </div>
+                  <span className="text-[8px] bg-emerald-50 border border-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg font-black uppercase">5 Days Open</span>
+                </div>
+                
+                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x">
                   {calendarDates.map((date) => {
                     const isSelected = selectedDateIso === date.isoString;
                     return (
@@ -461,19 +627,19 @@ export default function BookingWidget({ onBackToHome }) {
                           setSelectedDateIso(date.isoString);
                           setSelectedSlots([]); 
                         }}
-                        className={`p-3 rounded-xl border flex flex-col items-center justify-center transition-all duration-200 cursor-pointer ${
+                        className={`flex-shrink-0 snap-center w-[84px] py-4 px-2.5 rounded-2xl border-2 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center ${
                           isSelected
-                            ? 'bg-emerald-550 bg-emerald-500 text-white border-emerald-500 shadow-md transform scale-102 font-bold'
-                            : 'bg-white border-slate-200 hover:border-slate-350 text-pitch-slate-700'
+                            ? 'bg-emerald-650 border-emerald-600 text-white shadow-brand-glow scale-[1.04]'
+                            : 'bg-white border-slate-100 hover:border-slate-350 hover:bg-slate-50 text-pitch-slate-700 shadow-3xs'
                         }`}
                       >
-                        <span className={`text-[10px] uppercase font-black tracking-wider ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
+                        <span className={`text-[9px] uppercase font-black tracking-widest ${isSelected ? 'text-emerald-100' : 'text-slate-400'}`}>
                           {date.dayOfWeek}
                         </span>
-                        <span className="text-lg font-black my-0.5 leading-none">
+                        <span className="text-2xl font-display font-extrabold my-1 leading-none">
                           {date.dayNum}
                         </span>
-                        <span className={`text-[9px] font-semibold uppercase tracking-wider ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>
+                        <span className={`text-[9px] font-bold uppercase tracking-widest ${isSelected ? 'text-emerald-100' : 'text-slate-400'}`}>
                           {date.month}
                         </span>
                       </button>
@@ -482,20 +648,24 @@ export default function BookingWidget({ onBackToHome }) {
                 </div>
               </div>
 
-              {/* SLOTS GRID */}
-              <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-premium-soft hover:border-emerald-500/20 transition-all duration-300">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 mb-4 border-b border-slate-100">
-                  <h3 className="text-xs font-bold uppercase text-pitch-slate-400 tracking-wider">Select Play Timings</h3>
+              {/* Slots controller category tags and grids */}
+              <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-8 shadow-premium-soft space-y-6">
+                
+                {/* Categorization controls */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 select-none">
+                  <div>
+                    <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Timing Slots</h3>
+                    <p className="text-xs text-slate-500 mt-0.5 font-medium">Filter and tap to lock consecutive slots.</p>
+                  </div>
                   
-                  {/* CATEGORY FILTER TABS */}
-                  <div className="flex items-center space-x-1 bg-slate-100/50 backdrop-blur-xs p-1 rounded-lg border border-slate-200/40">
+                  <div className="flex flex-wrap gap-1 p-1 bg-slate-100/70 border border-slate-200/60 rounded-xl w-fit">
                     {['All', 'Morning', 'Afternoon', 'Evening', 'Night'].map((cat) => (
                       <button
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
-                        className={`px-2.5 py-1 text-[10px] font-bold rounded-md transition-all cursor-pointer ${
+                        className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer ${
                           selectedCategory === cat
-                            ? 'bg-white text-pitch-charcoal shadow-xs'
+                            ? 'bg-white text-pitch-charcoal shadow-3xs font-extrabold'
                             : 'text-pitch-slate-500 hover:text-pitch-charcoal'
                         }`}
                       >
@@ -509,423 +679,388 @@ export default function BookingWidget({ onBackToHome }) {
                   </div>
                 </div>
 
+                {/* Online bookings warning lock */}
                 {!bookingEnabled && (
-                  <div className="bg-red-50 text-red-800 border border-red-100 p-4 rounded-xl font-bold text-center text-xs mb-4 flex items-center justify-center gap-2">
-                    ⚠️ Online checkout is temporarily disabled. You can view slot states but reservations are locked.
+                  <div className="bg-red-50 text-red-800 border border-red-150 p-4 rounded-2xl font-bold text-center text-xs flex items-center justify-center gap-2 select-none">
+                    <AlertCircle className="w-4.5 h-4.5 text-red-600 flex-shrink-0" />
+                    Online bookings are temporarily closed. Please try again later.
                   </div>
                 )}
 
-                {/* THE FLUID GRID */}
-                {loading ? (
-                  <div className="py-12 text-center text-xs text-slate-400 font-sans italic animate-pulse">
-                    Retrieving active slots schedule...
-                  </div>
-                ) : error ? (
-                  <div className="py-12 text-center text-xs text-red-500 font-sans font-bold">
-                    {error}
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    <AnimatePresence mode="popLayout">
+                {/* Timing slot cards grid */}
+                <div>
+                  {loading ? (
+                    <div className="py-16 text-center text-xs text-slate-450 font-bold tracking-wider italic animate-pulse">
+                      🏟️ Fetching available play arena slots...
+                    </div>
+                  ) : error ? (
+                    <div className="py-16 text-center text-xs text-red-500 font-bold bg-red-50/50 border border-red-100/50 rounded-2xl">
+                      ⚠️ {error}
+                    </div>
+                  ) : filteredSlots.length === 0 ? (
+                    <div className="py-16 text-center text-xs text-slate-455 font-bold">
+                      No matches available in the "{selectedCategory}" time slot. Try another category filter.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
                       {filteredSlots.map((slot) => {
                         const isBooked = slot.is_booked;
                         const isSelected = selectedSlots.some(s => s.id === slot.id);
 
                         return (
-                          <motion.button
-                            layout
+                          <button
                             key={slot.id}
                             disabled={isBooked}
                             onClick={() => handleSlotClick(slot)}
-                            className={`relative p-3.5 rounded-xl border transition-all duration-200 flex flex-col justify-between items-center cursor-pointer min-h-[72px] select-none ${
+                            className={`group relative p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col justify-between items-start cursor-pointer min-h-[90px] overflow-hidden ${
                               isBooked
-                                ? 'bg-slate-50 border-slate-200 text-slate-300 pointer-events-none'
+                                ? 'bg-slate-50 border-slate-200 text-slate-350 pointer-events-none'
                                 : isSelected
-                                  ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm ring-1 ring-emerald-500/50 scale-102 font-bold'
-                                  : 'bg-white/60 backdrop-blur-xs border-slate-200 hover:border-emerald-500/35 text-pitch-charcoal hover:bg-white/95 shadow-2xs'
+                                  ? 'bg-emerald-650 border-emerald-600 text-white shadow-brand-glow scale-[1.02]'
+                                  : 'bg-white border-slate-200 hover:border-emerald-500/30 text-pitch-charcoal hover:shadow-premium-soft'
                             }`}
                           >
-                            <span className="text-xs font-black tracking-tight">{slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}</span>
-
-                            <div className="mt-2 w-full flex items-center justify-between text-[8px] font-bold uppercase tracking-wider">
-                              <span className={isBooked ? 'text-slate-300' : isSelected ? 'text-white/80' : 'text-slate-400'}>
-                                {slot.category === 'Morning' && '🌅'}
-                                {slot.category === 'Afternoon' && '☀️'}
-                                {slot.category === 'Evening' && '🌇'}
-                                {slot.category === 'Night' && '🌃'} {slot.category}
-                              </span>
-                              
-                              {slot.isPeak && (
-                                <span className={`px-1.5 py-0.5 rounded font-black text-[7px] ${
-                                  isSelected ? 'bg-emerald-600 text-white' : 'bg-amber-100 text-amber-800'
-                                }`}>
-                                  Peak
-                                </span>
+                            {/* Selection state badge */}
+                            <div className="absolute top-3.5 right-3.5">
+                              {isBooked ? (
+                                <span className="text-[7px] font-black tracking-widest text-slate-400 bg-slate-200/50 px-1.5 py-0.5 rounded uppercase">Locked</span>
+                              ) : isSelected ? (
+                                <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-3xs">
+                                  <Check className="w-2.5 h-2.5 text-emerald-600 stroke-[3.5]" />
+                                </div>
+                              ) : (
+                                <span className="text-[7px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded uppercase">Open</span>
                               )}
                             </div>
 
-                            {isBooked && (
-                              <div className="absolute inset-0 bg-slate-50/70 flex items-center justify-center rounded-xl text-[9px] text-slate-400 font-black tracking-widest">
-                                🔒 BOOKED
-                              </div>
-                            )}
-                          </motion.button>
+                            <span className="text-sm sm:text-base font-display font-extrabold tracking-tight mt-1">
+                              {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
+                            </span>
+                            
+                            <div className="w-full flex items-center justify-between text-[9px] font-bold uppercase tracking-wider mt-3">
+                              <span className={isSelected ? 'text-emerald-100' : 'text-slate-400'}>
+                                {slot.category === 'Morning' && '🌅 '}
+                                {slot.category === 'Afternoon' && '☀️ '}
+                                {slot.category === 'Evening' && '🌇 '}
+                                {slot.category === 'Night' && '🌃 '}
+                                {slot.category}
+                              </span>
+                              <span className={isSelected ? 'text-white' : 'text-slate-655 font-extrabold'}>
+                                ₹{slot.price}
+                              </span>
+                            </div>
+                          </button>
                         );
                       })}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {filteredSlots.length === 0 && !loading && !error && (
-                  <div className="py-8 text-center text-xs text-slate-400 font-sans italic">
-                    No time slots match the &quot;{selectedCategory}&quot; filter.
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
               </div>
 
-            </div>
+              {/* Floating Bottom Booking Summary Action Bar */}
+              <AnimatePresence>
+                {selectedSlots.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 100 }}
+                    className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200/80 shadow-[0_-15px_40px_-15px_rgba(15,23,42,0.15)] z-50 py-4 px-6 md:py-6 md:px-12 backdrop-blur-md bg-white/95"
+                  >
+                    <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex flex-col md:flex-row items-center md:items-start gap-4 text-center md:text-left">
+                        <div className="p-3 bg-emerald-50 rounded-2xl border border-emerald-100 flex items-center justify-center flex-shrink-0">
+                          <CalendarIcon className="w-6 h-6 text-emerald-600" />
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-black uppercase text-slate-450 tracking-wider">Your Selection</span>
+                          <h4 className="text-sm font-extrabold text-pitch-charcoal mt-0.5">
+                            {formatLocalDateString(selectedDateIso)} • {selectedSlots.length} hours selected
+                          </h4>
+                          <div className="flex flex-wrap gap-1 justify-center md:justify-start mt-2">
+                            {selectedSlots.map(s => (
+                              <span key={s.id} className="px-2.5 py-0.5 bg-slate-50 border border-slate-200 text-pitch-charcoal font-mono italic text-[9px] rounded font-bold">
+                                {s.start_time.slice(0, 5)} - {s.end_time.slice(0, 5)}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
 
-            {/* Right Column: Checkout Summary Box */}
-            <div className="lg:col-span-4 lg:sticky lg:top-24">
-              <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-premium-tall p-5 relative overflow-hidden hover:border-emerald-500/20 transition-all duration-300">
-                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-amber-400" />
-                
-                <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-4 pb-2 border-b border-slate-100">
-                  Reserving Stub
-                </h3>
-
-                <div className="space-y-3 mb-5">
-                  <div className="flex items-center space-x-2 text-xs">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                    <span className="text-pitch-charcoal font-bold truncate max-w-[200px]" title={turfName}>{turfName}</span>
-                  </div>
-
-                  <div className="flex items-center space-x-2 text-xs">
-                    <CalendarIcon className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                    <span className="text-pitch-charcoal font-bold">
-                      {formatLocalDateString(selectedDateIso)}
-                    </span>
-                  </div>
-                </div>
-
-                {selectedSlots.length > 0 ? (
-                  <div className="space-y-2 border-t border-slate-100 pt-4 mb-4 text-xs">
-                    
-                    <div className="p-2.5 bg-slate-100/60 border border-slate-200/60 rounded-lg flex flex-col space-y-1">
-                      <span className="text-[9px] font-black text-slate-400 uppercase">Selected slots</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {selectedSlots.map(s => (
-                          <span key={s.id} className="px-1.5 py-0.5 bg-white border border-slate-200 text-pitch-charcoal font-mono italic text-[9px] rounded font-bold">
-                            {s.start_time.slice(0, 5)} - {s.end_time.slice(0, 5)}
-                          </span>
-                        ))}
+                      <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
+                        <div className="text-right">
+                          <span className="text-[10px] font-black uppercase text-slate-455 tracking-wider">Total Amount</span>
+                          <p className="text-xl sm:text-2xl font-display font-black text-pitch-charcoal leading-none mt-0.5">
+                            ₹{priceCalculation.finalTotal}
+                          </p>
+                        </div>
+                        
+                        <button
+                          onClick={() => setStep(2)}
+                          className="px-8 py-3.5 rounded-xl bg-emerald-650 hover:bg-emerald-700 text-white font-extrabold text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-all duration-300 shadow-brand-glow hover:-translate-y-0.5"
+                        >
+                          Proceed to Details
+                          <ChevronRight className="w-4.5 h-4.5 stroke-[2.5]" />
+                        </button>
                       </div>
                     </div>
-
-                    <div className="flex justify-between items-baseline pt-4 border-t border-slate-100">
-                      <span className="text-[10px] font-black uppercase text-pitch-slate-500">Total Price</span>
-                      <span className="text-xl font-black text-pitch-charcoal">
-                        ₹{priceCalculation.finalTotal}
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        if (bookingEnabled) setStep(2);
-                      }}
-                      disabled={!bookingEnabled}
-                      className={`w-full text-white transition-all duration-200 py-3.5 rounded-xl font-extrabold uppercase text-xs tracking-wider flex items-center justify-center cursor-pointer shadow-md mt-4 ${
-                        bookingEnabled ? 'bg-pitch-charcoal hover:bg-emerald-500 active:scale-98' : 'bg-slate-300 pointer-events-none shadow-none'
-                      }`}
-                    >
-                      <span>Proceed checkout</span>
-                      <ChevronRight className="w-4 h-4 ml-1" />
-                    </button>
-                    
-                    <div className="flex items-center justify-center gap-1 text-[9px] text-slate-400 text-center mt-2.5">
-                      <Lock className="w-3 h-3 text-slate-350" /> Secure reservation gateway
-                    </div>
-                  </div>
-                ) : (
-                  <div className="py-10 text-center text-xs text-slate-400 italic border border-dashed border-slate-200 rounded-xl bg-white/40 backdrop-blur-xs shadow-2xs">
-                    💡 Select timing blocks to calculate prices.
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </AnimatePresence>
+
             </div>
+          )}
 
-          </div>
-        )}
-
-        {/* STEP 2: Input Customer Form Details */}
-        {step === 2 && checkoutStatus === 'idle' && (
-          <div className="max-w-md mx-auto bg-white/85 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-premium-tall p-6 relative overflow-hidden my-8 animate-fade-in hover:border-emerald-500/20 transition-all duration-300">
-            <div className="absolute top-0 inset-x-0 h-1 bg-emerald-500" />
-            <h2 className="text-lg font-black text-pitch-charcoal border-b border-slate-100 pb-3 mb-5">
-              Confirm Player Details
-            </h2>
-
-            <div className="p-3 bg-slate-100/65 rounded-xl border border-slate-200/60 mb-5 text-xs text-pitch-slate-700 space-y-1.5 font-mono">
-              <p><strong>Selected Date:</strong> {formatLocalDateString(selectedDateIso)}</p>
-              <p><strong>Timings:</strong> {selectedSlots[0].start_time.slice(0, 5)} - {selectedSlots[selectedSlots.length - 1].end_time.slice(0, 5)}</p>
-              <p><strong>Total Due:</strong> ₹{priceCalculation.finalTotal}</p>
-            </div>
-
-            <form onSubmit={handleProceedToPayment} className="space-y-4">
-              <div className="flex flex-col text-left space-y-1.5">
-                <label className="text-[10px] font-black uppercase text-slate-400">Full Name</label>
-                <input 
-                  type="text" 
-                  value={name} 
-                  onChange={(e) => setName(e.target.value)} 
-                  placeholder="e.g. Sourav Jena"
-                  required
-                  className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs"
-                />
+          {/* STEP 2: PLAYER INFORMATION DETAILS */}
+          {step === 2 && (
+            <div className="max-w-2xl mx-auto bg-white border border-slate-200/80 rounded-3xl shadow-premium-tall overflow-hidden p-6 sm:p-10 animate-fade-in">
+              <div className="mb-6 select-none">
+                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-550/10 border border-emerald-550/20 px-3 py-1 rounded-md">
+                  Step 2 of 3
+                </span>
+                <h2 className="text-xl sm:text-2xl font-display font-extrabold text-pitch-charcoal mt-3.5 leading-none">Player Information</h2>
+                <p className="text-xs text-slate-500 mt-1.5">Enter the reservation host details below.</p>
               </div>
 
-              <div className="flex flex-col text-left space-y-1.5">
-                <label className="text-[10px] font-black uppercase text-slate-400">Indian Mobile Number</label>
-                <input 
-                  type="tel" 
-                  value={phone} 
-                  onChange={(e) => setPhone(e.target.value)} 
-                  placeholder="e.g. 9876543210"
-                  required
-                  className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs"
-                />
-              </div>
+              <form onSubmit={handleProceedToPayment} className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="flex flex-col text-left space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Full Name</label>
+                    <div className="relative">
+                      <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+                      <input 
+                        type="text" 
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)} 
+                        placeholder="e.g. Sourav Jena"
+                        required
+                        className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-slate-205 text-xs font-bold focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 shadow-3xs transition-all"
+                      />
+                    </div>
+                  </div>
 
-              {error && <p className="text-xs text-red-500 font-bold text-center mt-2">{error}</p>}
+                  <div className="flex flex-col text-left space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Indian Mobile Number</label>
+                    <div className="relative">
+                      <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+                      <input 
+                        type="tel" 
+                        value={phone} 
+                        onChange={(e) => setPhone(e.target.value)} 
+                        placeholder="e.g. 9876543210"
+                        required
+                        className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-slate-205 text-xs font-bold focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 shadow-3xs transition-all"
+                      />
+                    </div>
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="py-3 rounded-xl border border-slate-200 hover:border-slate-350 bg-white hover:bg-slate-50 text-pitch-charcoal font-bold text-xs transition-colors cursor-pointer text-center"
-                >
-                  Back
-                </button>
-                <button
-                  type="submit"
-                  className="py-3 rounded-xl bg-pitch-charcoal hover:bg-emerald-555 bg-pitch-charcoal hover:bg-emerald-500 text-white font-extrabold uppercase tracking-wider text-xs transition-colors cursor-pointer text-center"
-                >
-                  Pay ₹{priceCalculation.finalTotal}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
+                {/* Summary panel visual card */}
+                <div className="bg-slate-50 rounded-2xl border border-slate-200/60 p-5 space-y-3.5 select-none">
+                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-slate-200/50 pb-2">
+                    Arena Booking Details
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase block">Venue</span>
+                      <span className="text-xs font-extrabold text-pitch-charcoal mt-0.5 block truncate" title={turfName}>{turfName}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase block">Date</span>
+                      <span className="text-xs font-extrabold text-pitch-charcoal mt-0.5 block">{formatLocalDateString(selectedDateIso)}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-bold text-slate-400 uppercase block">Duration</span>
+                      <span className="text-xs font-extrabold text-pitch-charcoal mt-0.5 block">{selectedSlots.length} Hour(s)</span>
+                    </div>
+                  </div>
 
-        {/* STEP 3: Payment Modes Verification */}
-        {step === 3 && checkoutStatus === 'idle' && (
-          <div className="max-w-md mx-auto bg-white/85 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-premium-tall p-6 relative overflow-hidden my-8 animate-fade-in hover:border-emerald-500/20 transition-all duration-300">
-            <div className="absolute top-0 inset-x-0 h-1 bg-emerald-500" />
-            <h2 className="text-lg font-black text-pitch-charcoal border-b border-slate-100 pb-3 mb-5 text-left">
-              {config?.paymentMode === 'razorpay' ? 'Secure Checkout Gateway' : 'Manual Scan & Pay'}
-            </h2>
+                  <div className="pt-2 border-t border-slate-200/40">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase block mb-1.5">Selected Timings</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedSlots.map((s, idx) => (
+                        <span key={idx} className="px-2.5 py-1 text-[10px] font-mono font-bold rounded-lg bg-white border border-slate-200 text-slate-700 flex items-center gap-1.5 shadow-3xs">
+                          <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                          {s.start_time.slice(0, 5)} - {s.end_time.slice(0, 5)}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
 
-            {config?.paymentMode === 'razorpay' ? (
-              // RAZORPAY GATEWAY VIEW
-              <div className="space-y-4 text-center">
-                <p className="text-xs text-pitch-slate-600 leading-relaxed text-left">
-                  You are completing a direct online reservation for <strong>{selectedSlots.length} slot(s)</strong> totaling <strong>₹{priceCalculation.finalTotal}</strong>. Click below to initiate the secure payment popup.
-                </p>
+                  <div className="pt-3.5 border-t border-slate-200/45 flex justify-between items-baseline">
+                    <span className="text-xs font-extrabold text-slate-550">Total Amount Due</span>
+                    <span className="text-xl font-display font-black text-pitch-charcoal">₹{priceCalculation.finalTotal}</span>
+                  </div>
+                </div>
+
+                {error && <p className="text-xs text-red-500 font-bold bg-red-50 border border-red-100 rounded-xl p-3 text-center">{error}</p>}
                 
-                {error && <p className="text-xs text-red-500 font-bold mt-2">{error}</p>}
-
-                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <button
                     type="button"
-                    onClick={() => setStep(2)}
-                    className="py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-pitch-charcoal font-bold text-xs cursor-pointer"
+                    onClick={() => setStep(1)}
+                    className="flex-1 py-3.5 rounded-xl border-2 border-slate-200 hover:border-slate-350 bg-white text-pitch-charcoal font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-center hover:bg-slate-55"
                   >
-                    Edit Details
-                  </button>
-                  <button
-                    onClick={handleRazorpayPayment}
-                    className="py-3 rounded-xl bg-emerald-500 hover:bg-emerald-650 text-white font-extrabold uppercase tracking-wider text-xs cursor-pointer shadow-sm"
-                  >
-                    Launch Checkout
-                  </button>
-                </div>
-              </div>
-            ) : (
-              // UPI MANUAL VIEW
-              <form onSubmit={handleUpiSubmit} className="space-y-5">
-                <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-100/60 border border-slate-200/60 p-4 rounded-xl">
-                  <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-2xs">
-                    <QRCodeSVG value={upiUrl} size={110} />
-                  </div>
-                  <div className="text-xs text-left space-y-1.5">
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">UPI Account</p>
-                    <p className="font-bold text-pitch-charcoal leading-none truncate max-w-[200px]">{upiName}</p>
-                    <p className="font-mono text-[10px] text-pitch-slate-500">{upiId}</p>
-                    <p className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-150 px-2 py-0.5 rounded font-bold inline-block">
-                      Amount: ₹{priceCalculation.finalTotal}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col text-left space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase text-slate-400">12-Digit Transaction UTR Code</label>
-                  <input 
-                    type="text" 
-                    value={transactionId}
-                    onChange={(e) => setTransactionId(e.target.value)}
-                    placeholder="e.g. 312345678901"
-                    required
-                    className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs"
-                  />
-                  <span className="text-[9px] text-slate-400 leading-normal">
-                    Enter the numeric reference ID from your UPI app receipt to complete the submission.
-                  </span>
-                </div>
-
-                {error && <p className="text-xs text-red-500 font-bold text-center mt-2">{error}</p>}
-
-                <div className="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setStep(2)}
-                    className="py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-pitch-charcoal font-bold text-xs cursor-pointer text-center"
-                  >
-                    Edit Details
+                    ← Back to Slots
                   </button>
                   <button
                     type="submit"
-                    className="py-3 rounded-xl bg-pitch-charcoal hover:bg-emerald-500 text-white font-extrabold uppercase tracking-wider text-xs cursor-pointer text-center shadow-sm"
+                    className="flex-1 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-center shadow-brand-glow hover:-translate-y-0.5"
                   >
-                    Submit Booking
+                    Proceed to Payment →
                   </button>
                 </div>
               </form>
-            )}
-          </div>
-        )}
-
-        {/* LOADING PROCESSING OVERLAY */}
-        {checkoutStatus === 'processing' && (
-          <div className="min-h-[320px] flex flex-col items-center justify-center bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-2xl py-10 px-6 max-w-sm mx-auto shadow-premium-tall relative overflow-hidden my-12 text-center animate-fade-in">
-            <div className="absolute top-0 inset-x-0 h-1 bg-emerald-500" />
-            
-            <div className="relative flex items-center justify-center w-12 h-12 rounded-full border border-slate-100 bg-slate-50 mb-4 animate-spin">
-              <div className="absolute inset-1 rounded-full border-3 border-slate-200 border-t-emerald-500" />
             </div>
+          )}
 
-            <h3 className="text-base font-black text-pitch-charcoal">
-              Processing Reservation
-            </h3>
-            
-            <p className="text-xs font-mono text-emerald-700 mt-2.5 animate-pulse font-bold">
-              {processingStep}
-            </p>
-          </div>
-        )}
-
-        {/* TICKET STUB SUCCESS CONFIRMATION */}
-        {checkoutStatus === 'done' && generatedTicket && (
-          <div className="max-w-md mx-auto bg-white/90 backdrop-blur-md border border-slate-250/70 rounded-2xl shadow-premium-tall relative overflow-hidden my-6 animate-fade-in text-left hover:border-emerald-500/20 transition-all duration-300">
-            <div className="h-1 bg-gradient-to-r from-emerald-500 to-teal-400" />
-
-            <div className="p-5">
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-250 text-[10px] font-black text-emerald-800">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>PIN ACTIVE</span>
-                  </span>
-                  <h3 className="text-lg font-black text-pitch-charcoal mt-3 leading-none truncate max-w-[200px]" title={turfName}>
-                    {turfName}
-                  </h3>
-                </div>
-                <div className="text-right">
-                  <span className="text-[8px] font-black text-slate-400 uppercase tracking-wider block">Group ID</span>
-                  <p className="text-xs font-mono font-black text-pitch-charcoal mt-0.5 bg-slate-50 border border-slate-200 px-2 py-0.5 rounded">
-                    {generatedTicket.bookingGroupId}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Split ticket overlay holes */}
-            <div className="relative flex items-center my-1 select-none">
-              <div className="w-3.5 h-3.5 rounded-full bg-[#fafafa] absolute -left-2 border-r border-slate-200" />
-              <div className="w-full border-b border-dashed border-slate-200" />
-              <div className="w-3.5 h-3.5 rounded-full bg-[#fafafa] absolute -right-2 border-l border-slate-200" />
-            </div>
-
-            <div className="p-5 space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-150 text-left">
-                  <span className="text-[8px] font-black text-slate-400 block uppercase tracking-wider">Play Date</span>
-                  <span className="text-xs font-extrabold text-pitch-charcoal mt-1 block">
-                    {generatedTicket.date}
-                  </span>
-                </div>
-                
-                <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-150 text-center">
-                  <span className="text-[8px] font-black text-emerald-850 block uppercase tracking-wider">GATE ACCESS PIN</span>
-                  <span className="text-sm font-mono font-black text-emerald-900 mt-1 block tracking-widest bg-white py-0.5 px-2 rounded-lg border border-emerald-200/50 shadow-2xs">
-                    🔒 {generatedTicket.accessPin} #
-                  </span>
-                </div>
-              </div>
-
-              {/* Booked Timings */}
-              <div className="p-3 bg-slate-50 border border-slate-150 rounded-xl text-left">
-                <span className="text-[8px] font-black text-slate-400 block uppercase tracking-wider mb-2">Booked Timings</span>
-                <div className="flex flex-wrap gap-1.5">
-                  {generatedTicket.slots.map((s, idx) => (
-                    <span key={idx} className="px-2.5 py-1 text-xs font-mono font-bold rounded bg-white border border-slate-200 text-pitch-slate-800 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-emerald-600" />
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="p-3 bg-slate-50 border border-slate-150 rounded-xl text-[10px] text-pitch-slate-600 flex items-start gap-2 text-left">
-                <Lock className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-pitch-charcoal block">Keypad activation</strong>
-                  Your unique gate PIN authorizes entrance commencing 10 minutes prior to reservation. Normal sneakers or turf flats permitted.
-                </div>
-              </div>
-            </div>
-
-            {/* Receipt invoice footer */}
-            <div className="p-5 border-t border-slate-200 bg-slate-50/50 rounded-b-2xl flex flex-col items-center space-y-3">
-              <div className="w-full flex justify-between items-baseline text-xs">
-                <span className="font-extrabold text-slate-400 uppercase text-[9px] tracking-wider">
-                  UTR Status: {config?.paymentMode === 'razorpay' ? 'PAID' : 'PENDING APPROVAL'}
+          {/* STEP 3: PAYMENT INTERACTION GATEWAY */}
+          {step === 3 && (
+            <div className="max-w-2xl mx-auto bg-white border border-slate-200/80 rounded-3xl shadow-premium-tall overflow-hidden p-6 sm:p-10 animate-fade-in">
+              <div className="mb-6 select-none">
+                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-550/10 border border-emerald-550/20 px-3 py-1 rounded-md">
+                  Step 3 of 3
                 </span>
-                <strong className="text-base font-black text-pitch-charcoal">₹{generatedTicket.price}</strong>
+                <h2 className="text-xl sm:text-2xl font-display font-extrabold text-pitch-charcoal mt-3.5 leading-none">
+                  {config?.paymentMode === 'razorpay' ? 'Secure Payment Checkout' : 'Scan & Pay UPI'}
+                </h2>
+                <p className="text-xs text-slate-500 mt-1.5">Complete payment to get your stadium gate access PIN.</p>
               </div>
 
-              {/* Barcode visual */}
-              <div className="w-full bg-white p-2.5 rounded-lg flex flex-col items-center space-y-1 border border-slate-150 select-none">
-                <div className="h-5 flex space-x-[1px] items-stretch opacity-60 w-full max-w-[180px]">
-                  {Array.from({ length: 36 }).map((_, i) => {
-                    const isWhite = i % 5 === 1 || i % 11 === 0;
-                    const widthStyle = i % 4 === 0 ? 'w-[3px]' : 'w-[1px]';
-                    return <div key={i} className={`h-full ${widthStyle} ${isWhite ? 'bg-transparent' : 'bg-slate-800'}`} />;
-                  })}
+              {config?.paymentMode === 'razorpay' ? (
+                <div className="space-y-6">
+                  <div className="bg-slate-50 rounded-2xl border border-slate-200/60 p-5 space-y-4 select-none">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-slate-500">Player</span>
+                      <span className="text-xs font-extrabold text-pitch-charcoal">{name}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-slate-500">Contact</span>
+                      <span className="text-xs font-extrabold text-pitch-charcoal">{phone}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs font-bold text-slate-500">Selected Slots</span>
+                      <span className="text-xs font-extrabold text-pitch-charcoal">{selectedSlots.length} Hour(s)</span>
+                    </div>
+                    <div className="pt-3 border-t border-slate-200/40 flex justify-between items-baseline">
+                      <span className="text-xs font-extrabold text-slate-550">Total Payable</span>
+                      <span className="text-xl font-display font-black text-pitch-charcoal">₹{priceCalculation.finalTotal}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-2 p-3 bg-emerald-550/10 border border-emerald-500/20 rounded-xl text-[10px] text-emerald-800 font-bold select-none">
+                    <ShieldCheck className="w-4.5 h-4.5 text-emerald-600 flex-shrink-0" />
+                    Secure transactions verified via encrypted gateway
+                  </div>
+
+                  {error && <p className="text-xs text-red-500 font-bold bg-red-50 border border-red-100 rounded-xl p-3 text-center">{error}</p>}
+
+                  <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="flex-1 py-3.5 rounded-xl border-2 border-slate-200 hover:border-slate-350 bg-white text-pitch-charcoal font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-center hover:bg-slate-50"
+                    >
+                      ← Back to Details
+                    </button>
+                    <button
+                      onClick={handleRazorpayPayment}
+                      className="flex-1 py-3.5 rounded-xl bg-emerald-650 hover:bg-emerald-700 text-white font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-center shadow-brand-glow hover:-translate-y-0.5"
+                    >
+                      Pay with Razorpay
+                    </button>
+                  </div>
                 </div>
-                <span className="text-[8px] font-mono tracking-widest text-slate-400">LOCK-{generatedTicket.bookingGroupId}</span>
-              </div>
+              ) : (
+                <form onSubmit={handleUpiSubmit} className="space-y-6">
+                  {/* Scan code panel */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-slate-50/50 border border-slate-200/60 p-5 rounded-2xl">
+                    <div className="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-slate-200 shadow-3xs relative group flex-shrink-0">
+                      <QRCodeSVG value={upiUrl} size={140} />
+                      <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mt-3.5">Scan to Pay UPI</span>
+                    </div>
+                    
+                    <div className="space-y-4 text-left select-none">
+                      <span className="text-[8px] font-black text-emerald-700 uppercase tracking-widest bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded">UPI Merchant Details</span>
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase block">Merchant Name</span>
+                        <span className="text-xs font-extrabold text-pitch-charcoal block truncate">{upiName}</span>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase block">VPA Address</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-mono font-extrabold text-slate-650 block truncate">{upiId}</span>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(upiId)}
+                            className="text-slate-400 hover:text-emerald-600 transition-colors p-1 bg-white border border-slate-200 rounded shadow-3xs cursor-pointer"
+                            title="Copy VPA"
+                          >
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
 
-              <div className="w-full pt-1">
-                <button
-                  onClick={resetBooking}
-                  className="w-full py-2.5 rounded-lg bg-pitch-charcoal hover:bg-emerald-500 text-white font-black text-[10px] uppercase tracking-wider transition-colors cursor-pointer text-center"
-                >
-                  Configure New Booking
-                </button>
-              </div>
+                      <div className="space-y-1">
+                        <span className="text-[9px] font-bold text-slate-400 uppercase block">Amount Due</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-base font-display font-black text-emerald-800 block">₹{priceCalculation.finalTotal}</span>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(priceCalculation.finalTotal.toString())}
+                            className="text-slate-400 hover:text-emerald-600 transition-colors p-1 bg-white border border-slate-200 rounded shadow-3xs cursor-pointer"
+                            title="Copy Amount"
+                          >
+                            <Copy className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {copySuccess && (
+                        <p className="text-[8px] text-emerald-600 font-extrabold uppercase animate-pulse">Copied details to clipboard!</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Transaction ID input */}
+                  <div className="flex flex-col text-left space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">12-Digit Transaction UTR Code</label>
+                    <input 
+                      type="text" 
+                      value={transactionId}
+                      onChange={(e) => setTransactionId(e.target.value)}
+                      placeholder="e.g. 312345678901"
+                      required
+                      className="w-full p-3.5 rounded-xl border border-slate-205 text-xs font-bold focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 shadow-3xs transition-all font-mono"
+                    />
+                    <div className="flex gap-2.5 p-3.5 bg-amber-50 border border-amber-100 rounded-xl text-[9px] text-amber-800 font-bold leading-normal">
+                      <Info className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      Paste the exact 12-digit reference UTR number from your payment application receipt stub. Failure to enter the correct UTR details will cancel verification.
+                    </div>
+                  </div>
+
+                  {error && <p className="text-xs text-red-500 font-bold bg-red-50 border border-red-100 rounded-xl p-3 text-center">{error}</p>}
+                  
+                  <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="flex-1 py-3.5 rounded-xl border-2 border-slate-200 hover:border-slate-350 bg-white text-pitch-charcoal font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-center hover:bg-slate-50"
+                    >
+                      ← Back to Details
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] sm:text-xs uppercase tracking-wider transition-all duration-200 cursor-pointer text-center shadow-brand-glow hover:-translate-y-0.5"
+                    >
+                      Verify & Confirm Ticket
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
       </div>
     </div>

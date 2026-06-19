@@ -195,7 +195,7 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
             <div className="pt-2">
               <button
                 onClick={onBookClick}
-                className="w-full bg-gradient-to-r from-emerald-650 to-teal-650 hover:from-emerald-750 hover:to-teal-750 text-white font-extrabold text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-300 py-3.5 sm:py-4 rounded-xl shadow-md hover:shadow-brand-glow hover:-translate-y-0.5 text-center cursor-pointer"
+                className="w-full bg-emerald-650 hover:bg-emerald-750 text-white font-extrabold text-[10px] sm:text-xs tracking-wider uppercase transition-all duration-300 py-3.5 sm:py-4 rounded-xl shadow-md hover:shadow-brand-glow hover:-translate-y-0.5 text-center cursor-pointer"
               >
                 Reserve Field Slot Now
               </button>

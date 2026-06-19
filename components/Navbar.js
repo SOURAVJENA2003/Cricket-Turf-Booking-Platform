@@ -67,7 +67,7 @@ export default function Navbar({ currentView, setView, onNavigateToSection, turf
   const isGreenHeader = true;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b bg-white/80 backdrop-blur-md border-slate-200/50 py-3 shadow-premium-soft text-pitch-charcoal">
+    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b bg-emerald-50/80 backdrop-blur-md border-emerald-100/50 py-3 shadow-premium-soft text-pitch-charcoal">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           
@@ -161,7 +161,7 @@ export default function Navbar({ currentView, setView, onNavigateToSection, turf
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden border-b shadow-lg transition-all bg-white/95 backdrop-blur-lg border-slate-200/80 shadow-premium-tall text-pitch-charcoal">
+        <div className="md:hidden border-b shadow-lg transition-all bg-emerald-50/95 backdrop-blur-lg border-emerald-100/60 shadow-premium-tall text-pitch-charcoal">
           <div className="px-4 pt-2 pb-6 space-y-3 sm:px-3">
             <button
               onClick={() => {
