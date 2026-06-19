@@ -1,43 +1,53 @@
-:root {
-  --primary: #2e7d32;
-  --primary-dark: #1b5e20;
-  --primary-light: #e8f5e9;
-  --secondary: #1565c0;
-  --accent: #ffa000;
-  --background: #f8fafc;
-  --card-bg: #ffffff;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --border: #e2e8f0;
-  --success: #22c55e;
-  --error: #ef4444;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  /* Off-whites, slate grays, and precise athletic greens */
+  --color-pitch-white: #ffffff;
+  --color-pitch-canvas: #f8fafc;
+  --color-pitch-slate-50: #f1f5f9;
+  --color-pitch-slate-300: #cbd5e1;
+  --color-pitch-slate-500: #64748b;
+  --color-pitch-slate-800: #1e293b;
+  --color-pitch-charcoal: #0f172a;
+  
+  --color-brand-green: #10b981;
+  --color-brand-green-hover: #059669;
+  --color-brand-green-light: #ecfdf5;
+  
+  --shadow-premium-soft: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 8px -1px rgba(15, 23, 42, 0.03);
+  --shadow-brand-glow: 0 10px 30px -10px rgba(16, 185, 129, 0.2);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@layer base {
+  body {
+    background-color: var(--color-pitch-canvas);
+    color: var(--color-pitch-slate-800);
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
-body {
-  background-color: var(--background);
-  color: var(--text-main);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
+/* Perfect crisp modern scrolls */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-button {
-  cursor: pointer;
-  font-family: inherit;
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
 }
 
-input, select {
-  font-family: inherit;
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 99px;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

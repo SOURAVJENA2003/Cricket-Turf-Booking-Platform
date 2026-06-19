@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { formatLocalDateString } from '@/lib/date-utils';
-import styles from './page.module.css';
+import { Trash2, ShieldAlert, ArrowLeft, Search, CheckCircle } from 'lucide-react';
 
 export default function CancelPage() {
   const [groupId, setGroupId] = useState('');
@@ -86,84 +86,134 @@ export default function CancelPage() {
   };
 
   return (
-    <main className={styles.main}>
-      <h1>Cancel Your Booking</h1>
-      
-      {step === 1 ? (
-        <>
-          <p>Enter your Booking Group ID and Phone Number to manage your slots.</p>
-          <form onSubmit={handleSearch} className={styles.form}>
-            <div className={styles.field}>
-              <label>Booking Group ID:</label>
-              <input 
-                type="text" 
-                placeholder="e.g. BK-XXXXXX"
-                value={groupId} 
-                onChange={(e) => setGroupId(e.target.value)} 
-                required 
-              />
-            </div>
-            <div className={styles.field}>
-              <label>Phone Number:</label>
-              <input 
-                type="tel" 
-                value={phone} 
-                onChange={(e) => setPhone(e.target.value)} 
-                required 
-              />
-            </div>
-
-            {error && <p className={styles.error}>{error}</p>}
-            {message && <p className={styles.success}>{message}</p>}
-
-            <button type="submit" disabled={loading} className={styles.searchBtn}>
-              {loading ? 'Searching...' : 'Find Bookings'}
-            </button>
-          </form>
-        </>
-      ) : (
-        <div className={styles.selectionArea}>
-          <p>Select the slots you wish to cancel:</p>
-          <div className={styles.bookingList}>
-            {bookings.map((booking) => (
-              <div 
-                key={booking.booking_id} 
-                className={`${styles.bookingItem} ${selectedBookings.includes(booking.booking_id) ? styles.selected : ''}`}
-                onClick={() => toggleSelection(booking.booking_id)}
-              >
-                <div className={styles.check}>
-                  <input 
-                    type="checkbox" 
-                    checked={selectedBookings.includes(booking.booking_id)} 
-                    readOnly 
-                  />
-                </div>
-                <div className={styles.info}>
-                  <strong>{booking.start_time} - {booking.end_time}</strong>
-                  <span>{formatLocalDateString(booking.date)}</span>
-                </div>
-                <div className={styles.price}>₹{booking.price}</div>
-              </div>
-            ))}
-          </div>
-
-          {error && <p className={styles.error}>{error}</p>}
-          {message && <p className={styles.success}>{message}</p>}
-
-          <div className={styles.actions}>
-            <button onClick={() => setStep(1)} className={styles.backBtn}>Back</button>
-            <button 
-              onClick={handleCancelSelected} 
-              disabled={loading || selectedBookings.length === 0} 
-              className={styles.cancelBtn}
-            >
-              {loading ? 'Cancelling...' : `Cancel ${selectedBookings.length} Selected`}
-            </button>
-          </div>
+    <main className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans py-12 md:py-20 flex flex-col justify-center items-center px-4">
+      <div className="max-w-md w-full bg-white border border-slate-200 rounded-3xl shadow-premium-tall p-6 md:p-8 relative overflow-hidden text-left">
+        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-500 to-amber-500" />
+        
+        {/* Breadcrumb Header */}
+        <div className="flex items-center space-x-2 text-xs text-pitch-slate-450 font-bold uppercase tracking-wider mb-6">
+          <Link href="/" className="hover:text-pitch-charcoal transition-colors flex items-center gap-1">
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
+          </Link>
         </div>
-      )}
 
-      <Link href="/" className={styles.homeLink}>Back to Home</Link>
+        <h1 className="text-xl sm:text-2xl font-display font-black text-pitch-charcoal mt-1 tracking-tight leading-none">
+          Manage Reservations
+        </h1>
+        
+        {step === 1 ? (
+          <div className="mt-4 space-y-5">
+            <p className="text-xs text-pitch-slate-500 leading-relaxed font-sans">
+              Enter your Booking Group ID (e.g., <code>BK-XXXXXX</code>) and mobile number registered during play reservation to view and request cancellations.
+            </p>
+            
+            <form onSubmit={handleSearch} className="space-y-4">
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400">Booking Group ID</label>
+                <input 
+                  type="text" 
+                  placeholder="e.g. BK-F18A"
+                  value={groupId} 
+                  onChange={(e) => setGroupId(e.target.value)} 
+                  required 
+                  className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs"
+                />
+              </div>
+
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-[10px] font-black uppercase text-slate-400">Mobile Number</label>
+                <input 
+                  type="tel" 
+                  placeholder="e.g. 9876543210"
+                  value={phone} 
+                  onChange={(e) => setPhone(e.target.value)} 
+                  required 
+                  className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs"
+                />
+              </div>
+
+              {error && <p className="text-xs text-red-500 font-bold text-center">{error}</p>}
+              {message && <p className="text-xs text-emerald-600 font-bold text-center">{message}</p>}
+
+              <button 
+                type="submit" 
+                disabled={loading} 
+                className="w-full py-3.5 rounded-xl bg-pitch-charcoal hover:bg-emerald-600 text-white font-extrabold uppercase tracking-wider text-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <Search className="w-4 h-4" />
+                {loading ? 'Searching...' : 'Find Reservations'}
+              </button>
+            </form>
+          </div>
+        ) : (
+          <div className="mt-4 space-y-5">
+            <p className="text-xs text-pitch-slate-500 leading-relaxed font-sans">
+              Select one or more active timeline slot blocks you wish to request cancellation for:
+            </p>
+
+            <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
+              {bookings.map((booking) => {
+                const isSelected = selectedBookings.includes(booking.booking_id);
+                return (
+                  <div 
+                    key={booking.booking_id} 
+                    className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between shadow-2xs select-none ${
+                      isSelected
+                        ? 'border-emerald-500 bg-emerald-50/20'
+                        : 'border-slate-200 bg-white hover:border-slate-350'
+                    }`}
+                    onClick={() => toggleSelection(booking.booking_id)}
+                  >
+                    <div className="flex items-center space-x-3 text-left">
+                      <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
+                        isSelected ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 bg-white'
+                      }`}>
+                        {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                      </div>
+                      <div className="text-xs">
+                        <strong className="text-pitch-charcoal block">{booking.start_time.slice(0, 5)} - {booking.end_time.slice(0, 5)}</strong>
+                        <span className="text-[10px] text-slate-400 font-mono">{formatLocalDateString(booking.date)}</span>
+                      </div>
+                    </div>
+                    <div className="text-xs font-mono font-black text-pitch-charcoal">₹{parseFloat(booking.price)}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {error && <p className="text-xs text-red-500 font-bold text-center">{error}</p>}
+            {message && <p className="text-xs text-emerald-600 font-bold text-center">{message}</p>}
+
+            <div className="p-3 bg-amber-50/50 border border-amber-150 rounded-xl text-[10px] text-amber-900 flex items-start gap-2 leading-relaxed">
+              <ShieldAlert className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
+              <div>
+                <strong>Cancellation Policy:</strong> Slot cancellations release timings immediately back to the pool. Refund approvals are subject to admin review.
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <button 
+                onClick={() => setStep(1)} 
+                className="py-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-pitch-charcoal font-bold text-xs cursor-pointer text-center"
+              >
+                Back
+              </button>
+              <button 
+                onClick={handleCancelSelected} 
+                disabled={loading || selectedBookings.length === 0} 
+                className={`py-3 rounded-xl font-extrabold uppercase tracking-wider text-xs cursor-pointer text-center flex items-center justify-center gap-1.5 shadow-xs ${
+                  selectedBookings.length > 0 
+                    ? 'bg-red-550 bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-slate-200 text-slate-400 pointer-events-none'
+                }`}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                {loading ? 'Cancelling...' : `Cancel Selected`}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </main>
   );
 }

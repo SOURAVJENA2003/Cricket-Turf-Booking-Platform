@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import styles from './page.module.css';
+import { LayoutDashboard, CalendarRange, Settings, Save, Sparkles, ChevronLeft } from 'lucide-react';
 
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -123,244 +123,329 @@ export default function AdminSettingsPage() {
 
   if (loading) {
     return (
-      <main className={styles.main}>
-        <header className={styles.header}>
-          <h1>Admin Settings</h1>
+      <main className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans pb-12">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm select-none">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500 text-white">
+                <Settings className="w-4.5 h-4.5" />
+              </div>
+              <span className="text-sm font-display font-extrabold tracking-tight text-pitch-charcoal">
+                CREASEPRO<span className="text-emerald-700 text-[9px] border border-emerald-300 px-1 py-0.5 rounded ml-1 bg-emerald-50">CONSOLE</span>
+              </span>
+            </div>
+          </div>
         </header>
-        <p>Loading settings configuration...</p>
+        <div className="pt-28 max-w-xl mx-auto text-xs text-slate-400 font-sans italic animate-pulse py-12">
+          Loading settings configuration...
+        </div>
       </main>
     );
   }
 
   return (
-    <main className={styles.main}>
-      <header className={styles.header}>
-        <h1>Admin Settings</h1>
-        <nav className={styles.nav}>
-          <Link href="/admin" className={styles.navLink}>Slot Manager</Link>
-          <Link href="/admin/bookings" className={styles.navLink}>Bookings List</Link>
-        </nav>
+    <main className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans pb-12">
+      {/* Navigation Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm select-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500 text-white">
+              <Settings className="w-4.5 h-4.5" />
+            </div>
+            <span className="text-sm font-display font-extrabold tracking-tight text-pitch-charcoal">
+              CREASEPRO<span className="text-emerald-700 text-[9px] border border-emerald-300 px-1 py-0.5 rounded ml-1 bg-emerald-50">CONSOLE</span>
+            </span>
+          </div>
+
+          <nav className="flex items-center space-x-6">
+            <Link href="/admin" className="text-xs font-bold uppercase tracking-wider text-pitch-slate-500 hover:text-pitch-charcoal transition-colors flex items-center gap-1.5">
+              <LayoutDashboard className="w-4 h-4" /> Slot Manager
+            </Link>
+            <Link href="/admin/bookings" className="text-xs font-bold uppercase tracking-wider text-pitch-slate-500 hover:text-pitch-charcoal transition-colors flex items-center gap-1.5">
+              <CalendarRange className="w-4 h-4" /> Bookings
+            </Link>
+          </nav>
+
+        </div>
       </header>
 
-      <section className={styles.section}>
-        <div className={styles.card}>
-          <h2>Update Turf Settings</h2>
-          <p className={styles.description}>
-            Modify operating hours, default pricing, payment modes, and branding metadata dynamically.
-          </p>
+      {/* Main Settings Page content */}
+      <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 space-y-6 text-left">
+        
+        {/* Title panel */}
+        <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+          <div>
+            <h2 className="text-lg font-display font-black text-pitch-charcoal leading-none">Console Settings</h2>
+            <p className="text-xs text-pitch-slate-550 mt-1 font-sans">Modify operating timing structures, default prices, payment modes, and profile branding decals.</p>
+          </div>
+        </div>
 
-          {success && <div className={styles.successMessage}>{success}</div>}
-          {error && <div className={styles.errorMessage}>{error}</div>}
+        {/* Form panel card */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
+          
+          {success && (
+            <div className="bg-emerald-50 text-emerald-800 border border-emerald-150 p-4 rounded-xl font-bold text-xs mb-6 flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-emerald-600" /> {success}
+            </div>
+          )}
+          {error && (
+            <div className="bg-red-50 text-red-800 border border-red-150 p-4 rounded-xl font-bold text-xs mb-6">
+              {error}
+            </div>
+          )}
 
-          <form onSubmit={handleSubmit}>
-            {/* GENERAL DETAILS */}
-            <h3 className={styles.settingsSectionTitle}>General Profile</h3>
-            <div className={styles.formGroup}>
-              <label>Turf Name:</label>
-              <input 
-                type="text" 
-                value={turfName} 
-                onChange={(e) => setTurfName(e.target.value)} 
-                className={styles.input} 
-                required 
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Address:</label>
-              <textarea 
-                value={turfAddress} 
-                onChange={(e) => setTurfAddress(e.target.value)} 
-                className={styles.textarea} 
-                required 
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Google Maps URL:</label>
-              <input 
-                type="url" 
-                value={turfGoogleMaps} 
-                onChange={(e) => setTurfGoogleMaps(e.target.value)} 
-                className={styles.input} 
-                required 
-              />
-            </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label>Contact Phone:</label>
-                <input 
-                  type="text" 
-                  value={turfPhone} 
-                  onChange={(e) => setTurfPhone(e.target.value)} 
-                  className={styles.input} 
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Contact Email:</label>
-                <input 
-                  type="email" 
-                  value={turfEmail} 
-                  onChange={(e) => setTurfEmail(e.target.value)} 
-                  className={styles.input} 
-                />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            
+            {/* GENERAL PROFILE */}
+            <div>
+              <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider pb-2 border-b border-slate-100 mb-4">
+                General Profile
+              </h3>
+              <div className="space-y-4">
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Turf Name</label>
+                  <input 
+                    type="text" 
+                    value={turfName} 
+                    onChange={(e) => setTurfName(e.target.value)} 
+                    required 
+                    className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full" 
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Address Location</label>
+                  <textarea 
+                    value={turfAddress} 
+                    onChange={(e) => setTurfAddress(e.target.value)} 
+                    required 
+                    rows={3}
+                    className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-sans" 
+                  />
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Google Maps Navigation URL</label>
+                  <input 
+                    type="url" 
+                    value={turfGoogleMaps} 
+                    onChange={(e) => setTurfGoogleMaps(e.target.value)} 
+                    required 
+                    className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Contact Phone</label>
+                    <input 
+                      type="text" 
+                      value={turfPhone} 
+                      onChange={(e) => setTurfPhone(e.target.value)} 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Contact Email</label>
+                    <input 
+                      type="email" 
+                      value={turfEmail} 
+                      onChange={(e) => setTurfEmail(e.target.value)} 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* OPERATIONS CONFIG */}
-            <h3 className={styles.settingsSectionTitle}>Operations & Pricing</h3>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label>Opening Time (HH:MM):</label>
-                <input 
-                  type="text" 
-                  value={openingTime} 
-                  onChange={(e) => setOpeningTime(e.target.value)} 
-                  placeholder="e.g. 06:00" 
-                  className={styles.input} 
-                  required 
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Closing Time (HH:MM):</label>
-                <input 
-                  type="text" 
-                  value={closingTime} 
-                  onChange={(e) => setClosingTime(e.target.value)} 
-                  placeholder="e.g. 23:00" 
-                  className={styles.input} 
-                  required 
-                />
-              </div>
-            </div>
-            <div className={styles.formGroup}>
-              <label>Default Price per Hour (₹):</label>
-              <input 
-                type="number" 
-                value={defaultSlotPrice} 
-                onChange={(e) => setDefaultSlotPrice(e.target.value)} 
-                className={styles.input} 
-                step="0.01" 
-                required 
-              />
-            </div>
-
-            {/* PAYMENT OPTIONS */}
-            <h3 className={styles.settingsSectionTitle}>Payments</h3>
-            <div className={styles.formGroup}>
-              <label>Active Payment Mode:</label>
-              <select 
-                value={paymentMode} 
-                onChange={(e) => setPaymentMode(e.target.value)} 
-                className={styles.select}
-              >
-                <option value="upi">UPI Manual (Scan QR & Enter UTR)</option>
-                <option value="razorpay">Razorpay Online Gateway</option>
-              </select>
-            </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label>UPI ID (For UPI Mode):</label>
-                <input 
-                  type="text" 
-                  value={upiId} 
-                  onChange={(e) => setUpiId(e.target.value)} 
-                  className={styles.input} 
-                  required 
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>UPI Name (For UPI Mode):</label>
-                <input 
-                  type="text" 
-                  value={upiName} 
-                  onChange={(e) => setUpiName(e.target.value)} 
-                  className={styles.input} 
-                  required 
-                />
+            <div>
+              <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider pb-2 border-b border-slate-100 mb-4">
+                Operations & Pricing
+              </h3>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Opening Hour (HH:MM)</label>
+                    <input 
+                      type="text" 
+                      value={openingTime} 
+                      onChange={(e) => setOpeningTime(e.target.value)} 
+                      placeholder="e.g. 06:00" 
+                      required 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Closing Hour (HH:MM)</label>
+                    <input 
+                      type="text" 
+                      value={closingTime} 
+                      onChange={(e) => setClosingTime(e.target.value)} 
+                      placeholder="e.g. 23:00" 
+                      required 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Default Price per Hour (₹)</label>
+                  <input 
+                    type="number" 
+                    value={defaultSlotPrice} 
+                    onChange={(e) => setDefaultSlotPrice(e.target.value)} 
+                    step="0.01" 
+                    required 
+                    className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                  />
+                </div>
               </div>
             </div>
 
-            {/* BRANDING & SOCIAL MEDIA (OPTIONAL) */}
-            <h3 className={styles.settingsSectionTitle}>Branding & Socials (Optional)</h3>
-            <div className={styles.formGroup}>
-              <label>Turf Description:</label>
-              <textarea 
-                value={turfDescription} 
-                onChange={(e) => setTurfDescription(e.target.value)} 
-                className={styles.textarea} 
-                placeholder="Brief description about the turf..." 
-              />
+            {/* PAYMENTS */}
+            <div>
+              <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider pb-2 border-b border-slate-100 mb-4">
+                Payment Configurations
+              </h3>
+              <div className="space-y-4">
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Active Mode</label>
+                  <select 
+                    value={paymentMode} 
+                    onChange={(e) => setPaymentMode(e.target.value)} 
+                    className="p-3 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:border-emerald-500 bg-transparent cursor-pointer shadow-2xs w-full"
+                  >
+                    <option value="upi">Manual UPI (QR scan & UTR submission)</option>
+                    <option value="razorpay">Online Razorpay Gateway (Test mode)</option>
+                  </select>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">UPI Address (For UPI Mode)</label>
+                    <input 
+                      type="text" 
+                      value={upiId} 
+                      onChange={(e) => setUpiId(e.target.value)} 
+                      required 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">UPI Account Name (For UPI Mode)</label>
+                    <input 
+                      type="text" 
+                      value={upiName} 
+                      onChange={(e) => setUpiName(e.target.value)} 
+                      required 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full" 
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label>Logo URL:</label>
-                <input 
-                  type="url" 
-                  value={turfLogoUrl} 
-                  onChange={(e) => setTurfLogoUrl(e.target.value)} 
-                  placeholder="https://example.com/logo.png" 
-                  className={styles.input} 
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Banner Image URL:</label>
-                <input 
-                  type="url" 
-                  value={turfBannerUrl} 
-                  onChange={(e) => setTurfBannerUrl(e.target.value)} 
-                  placeholder="https://example.com/banner.jpg" 
-                  className={styles.input} 
-                />
-              </div>
-            </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label>WhatsApp Contact Number:</label>
-                <input 
-                  type="text" 
-                  value={whatsappNumber} 
-                  onChange={(e) => setWhatsappNumber(e.target.value)} 
-                  placeholder="e.g. 91XXXXXXXXXX" 
-                  className={styles.input} 
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label>Instagram Page URL:</label>
-                <input 
-                  type="url" 
-                  value={instagramUrl} 
-                  onChange={(e) => setInstagramUrl(e.target.value)} 
-                  placeholder="https://instagram.com/yourpage" 
-                  className={styles.input} 
-                />
+
+            {/* BRANDING (OPTIONAL) */}
+            <div>
+              <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider pb-2 border-b border-slate-100 mb-4">
+                Branding & Social Links (Optional)
+              </h3>
+              <div className="space-y-4">
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Turf Description Decal</label>
+                  <textarea 
+                    value={turfDescription} 
+                    onChange={(e) => setTurfDescription(e.target.value)} 
+                    rows={2}
+                    placeholder="e.g. built for ultimate performance..." 
+                    className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-sans" 
+                  />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Branding Logo URL</label>
+                    <input 
+                      type="url" 
+                      value={turfLogoUrl} 
+                      onChange={(e) => setTurfLogoUrl(e.target.value)} 
+                      placeholder="https://example.com/logo.png" 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Branding Banner URL</label>
+                    <input 
+                      type="url" 
+                      value={turfBannerUrl} 
+                      onChange={(e) => setTurfBannerUrl(e.target.value)} 
+                      placeholder="https://example.com/banner.jpg" 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">WhatsApp Mobile Contact</label>
+                    <input 
+                      type="text" 
+                      value={whatsappNumber} 
+                      onChange={(e) => setWhatsappNumber(e.target.value)} 
+                      placeholder="e.g. 919876543210" 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Instagram Profile Link</label>
+                    <input 
+                      type="url" 
+                      value={instagramUrl} 
+                      onChange={(e) => setInstagramUrl(e.target.value)} 
+                      placeholder="https://instagram.com/profile" 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* PLATFORM CONFIG */}
-            <h3 className={styles.settingsSectionTitle}>Platform Control</h3>
-            <div className={styles.formGroup}>
-              <label className={styles.checkboxLabel}>
+            <div>
+              <h3 className="text-xs font-black uppercase text-slate-400 tracking-wider pb-2 border-b border-slate-100 mb-4">
+                Platform Access Control
+              </h3>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start space-x-3 select-none">
                 <input 
                   type="checkbox" 
                   checked={bookingEnabled} 
                   onChange={(e) => setBookingEnabled(e.target.checked)} 
+                  className="w-4 h-4 rounded border-slate-350 text-emerald-500 focus:ring-emerald-500 cursor-pointer mt-0.5"
                 />
-                Enable Public Bookings
-              </label>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                If unchecked, slot grids will be read-only and checkouts disabled for customers.
-              </p>
+                <div className="text-xs">
+                  <label className="font-extrabold text-pitch-charcoal block cursor-pointer">Enable Public Web Bookings</label>
+                  <span className="text-[10px] text-pitch-slate-500 leading-normal block mt-0.5">
+                    If checked, customers can select timing slots and proceed to pay. If unchecked, checkout is disabled and slots are read-only.
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div style={{ marginTop: '30px' }}>
-              <button type="submit" disabled={saving} className={styles.submitBtn}>
+            {/* Actions */}
+            <div className="pt-6 border-t border-slate-100 flex items-center justify-between">
+              <Link href="/admin" className="text-xs font-semibold text-pitch-slate-500 hover:text-pitch-charcoal transition-colors flex items-center gap-1">
+                <ChevronLeft className="w-3.5 h-3.5" /> Return to console
+              </Link>
+              <button 
+                type="submit" 
+                disabled={saving} 
+                className="px-5 py-3 rounded-xl bg-pitch-charcoal hover:bg-emerald-600 text-white font-extrabold text-xs uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shadow-sm"
+              >
+                <Save className="w-4 h-4" />
                 {saving ? 'Saving...' : 'Save Settings'}
               </button>
             </div>
-          </form>
-        </div>
-      </section>
 
-      <Link href="/admin" className={styles.backLink}>Back to Dashboard</Link>
+          </form>
+
+        </div>
+
+      </section>
     </main>
   );
 }

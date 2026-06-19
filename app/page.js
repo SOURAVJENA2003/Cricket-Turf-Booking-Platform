@@ -1,27 +1,22 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import Link from 'next/link';
-import DatePicker from '@/components/DatePicker';
-import SlotGrid from '@/components/SlotGrid';
-import BookingModal from '@/components/BookingModal';
-import SuccessModal from '@/components/SuccessModal';
-import { getIstTodayString } from '@/lib/date-utils';
-import styles from './page.module.css';
+import React, { useState, useEffect } from 'react';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
+import Stats from '@/components/Stats';
+import BookingWidget from '@/components/BookingWidget';
+import FinalCTA from '@/components/FinalCTA';
+import Footer from '@/components/Footer';
+import Gallery from '@/components/Gallery';
+import LocationSpotlight from '@/components/LocationSpotlight';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Home() {
-  const [selectedDate, setSelectedDate] = useState(getIstTodayString());
-  const [slots, setSlots] = useState([]);
-  const [selectedSlots, setSelectedSlots] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [completedBookingId, setCompletedBookingId] = useState(null); // Replaces successMessage
+  const [view, setView] = useState('landing'); // 'landing' | 'booking'
   const [turfDetails, setTurfDetails] = useState(null);
-  const [bookingEnabled, setBookingEnabled] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
+  // Load database dynamic configurations on mount
   useEffect(() => {
     const fetchConfig = async () => {
       try {
@@ -29,182 +24,121 @@ export default function Home() {
         const data = await response.json();
         if (data.success && data.data.turfDetails) {
           setTurfDetails(data.data.turfDetails);
-          setBookingEnabled(data.data.bookingEnabled !== false);
         }
       } catch (err) {
-        console.error('Failed to load turf config:', err);
+        console.error('Failed to load turf configurations:', err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchConfig();
   }, []);
 
-  useEffect(() => {
-    let active = true;
-    const fetchSlots = async () => {
-      try {
-        const response = await fetch(`/api/slots?date=${selectedDate}`);
-        const data = await response.json();
-        if (active) {
-          if (response.ok && data.success) {
-            setSlots(data.data);
-            if (data.data.length === 0) {
-              setError('No slots found for this date. Please ensure the database is seeded.');
-            }
-          } else {
-            setError(data.message || 'Failed to fetch slots');
-          }
-        }
-      } catch (error) {
-        if (active) {
-          setError('Connection error: Could not reach the server.');
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    };
+  const scrollToSection = (id) => {
+    const element = document.getElementById(id);
+    if (element) {
+      const offset = 80; // offset for sticky navbar
+      const bodyRect = document.body.getBoundingClientRect().top;
+      const elementRect = element.getBoundingClientRect().top;
+      const elementPosition = elementRect - bodyRect;
+      const offsetPosition = elementPosition - offset;
 
-    fetchSlots();
-    return () => {
-      active = false;
-    };
-  }, [selectedDate, refreshTrigger]);
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    setSelectedSlots([]); // Clear selection when date changes
-    setLoading(true);
-    setError('');
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
   };
 
-  const handleSelectSlot = (slot) => {
-    if (!bookingEnabled) return;
-    const isAlreadySelected = selectedSlots.some(s => s.id === slot.id);
-    
-    if (isAlreadySelected) {
-      // Allow deselecting only the ends of the selection to maintain consecutiveness
-      // For simplicity, we'll allow deselecting any, but we'll re-validate or just clear
-      setSelectedSlots(selectedSlots.filter(s => s.id !== slot.id));
-      return;
-    }
-
-    if (selectedSlots.length === 0) {
-      setSelectedSlots([slot]);
-      return;
-    }
-
-    // Check if consecutive
-    const sortedSelected = [...selectedSlots, slot].sort((a, b) => a.start_time.localeCompare(b.start_time));
-    let isConsecutive = true;
-    for (let i = 0; i < sortedSelected.length - 1; i++) {
-      if (sortedSelected[i].end_time !== sortedSelected[i+1].start_time) {
-        isConsecutive = false;
-        break;
-      }
-    }
-
-    if (isConsecutive) {
-      setSelectedSlots(sortedSelected);
+  const handleNavigateToSection = (sectionId) => {
+    if (view !== 'landing') {
+      setView('landing');
+      setTimeout(() => {
+        scrollToSection(sectionId);
+      }, 100);
     } else {
-      // If not consecutive, start a new selection with just this slot
-      setSelectedSlots([slot]);
+      scrollToSection(sectionId);
     }
   };
 
-  const handleBookingSuccess = (bookingGroupId) => {
-    setIsModalOpen(false);
-    setSelectedSlots([]);
-    setCompletedBookingId(bookingGroupId); // Trigger the success modal
-    setLoading(true);
-    setError('');
-    setRefreshTrigger(prev => prev + 1);
+  const changeView = (newView) => {
+    setView(newView);
+    window.scrollTo({ top: 0 });
   };
 
-  const handleCloseSuccessModal = () => {
-    setCompletedBookingId(null);
-  };
-
-  const totalPrice = selectedSlots.reduce((sum, slot) => sum + parseFloat(slot.price), 0);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-pitch-canvas flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-emerald-500 rounded-full animate-spin" />
+          <p className="text-xs text-pitch-slate-500 font-bold tracking-wider animate-pulse">LOADING STADIUM CONTROLS...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main className={styles.main}>
-      <header className={styles.header}>
-        <h1>{turfDetails ? turfDetails.name : 'Cricket Turf Booking'}</h1>
-        <nav className={styles.nav}>
-          <Link href="/cancel" className={styles.navLink}>Cancel Booking</Link>
-          <Link href="/admin/login" className={styles.navLink}>Admin Login</Link>
-        </nav>
-      </header>
-
-      <section className={styles.bookingSection}>
-        <DatePicker selectedDate={selectedDate} onDateChange={handleDateChange} />
-        
-        {!bookingEnabled && (
-          <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '15px', borderRadius: '6px', margin: '20px 0', fontWeight: 'bold', textAlign: 'center' }}>
-            ⚠️ Public bookings are temporarily disabled by the administrator. You can view slots but checkout is locked.
-          </div>
-        )}
-
-        {error && <div className={styles.error}>{error}</div>}
-
-        {selectedSlots.length > 0 && (
-          <div className={styles.cartSummary}>
-            <div className={styles.cartInfo}>
-              <strong>{selectedSlots.length} Slots Selected:</strong>
-              <span> {selectedSlots[0].start_time} - {selectedSlots[selectedSlots.length - 1].end_time}</span>
-              <span className={styles.cartPrice}>Total: ₹{totalPrice}</span>
-            </div>
-            <div className={styles.cartActions}>
-              <button onClick={() => setSelectedSlots([])} className={styles.clearBtn}>Clear</button>
-              <button 
-                onClick={() => {
-                  if (bookingEnabled) setIsModalOpen(true);
-                }} 
-                className={styles.bookBtn}
-                disabled={!bookingEnabled}
-                style={!bookingEnabled ? { backgroundColor: '#ccc', cursor: 'not-allowed' } : {}}
-              >
-                {bookingEnabled ? 'Book Now' : 'Bookings Disabled'}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {loading ? (
-          <p className={styles.loading}>Loading slots...</p>
-        ) : (
-          !error && <SlotGrid slots={slots} selectedSlots={selectedSlots} onSelectSlot={handleSelectSlot} />
-        )}
-      </section>
-
-      {isModalOpen && (
-        <BookingModal 
-          slots={selectedSlots} 
-          onClose={() => setIsModalOpen(false)} 
-          onBookingSuccess={handleBookingSuccess}
+    <div className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans antialiased text-left flex flex-col justify-between">
+      <div>
+        {/* Navigation header */}
+        <Navbar 
+          currentView={view} 
+          setView={changeView} 
+          onNavigateToSection={handleNavigateToSection}
+          turfDetails={turfDetails}
         />
-      )}
 
-      {completedBookingId && (
-        <SuccessModal 
-          bookingId={completedBookingId}
-          onClose={handleCloseSuccessModal}
-        />
-      )}
+        {/* Dynamic routing with Framer Motion transitions */}
+        <AnimatePresence mode="wait">
+          {view === 'landing' ? (
+            <motion.div
+              key="landing-page"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.22, ease: 'easeInOut' }}
+            >
+              {/* Hero presentation banner */}
+              <Hero 
+                onBookClick={() => changeView('booking')} 
+                onExploreClick={() => handleNavigateToSection('location-specs')} 
+                turfDetails={turfDetails}
+              />
 
-      {turfDetails && (
-        <footer className={styles.footer} style={{ marginTop: '40px', padding: '20px 0', borderTop: '1px solid var(--border)', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-          <p style={{ fontWeight: 'bold', fontSize: '1rem', color: 'var(--text)', marginBottom: '5px' }}>{turfDetails.name}</p>
-          <p style={{ marginBottom: '5px' }}>{turfDetails.address}</p>
-          <p style={{ marginBottom: '10px' }}>Hours: {turfDetails.openTime} - {turfDetails.closeTime}</p>
-          <p>
-            <a href={turfDetails.googleMaps} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)', textDecoration: 'underline' }}>
-              View on Google Maps
-            </a>
-          </p>
-        </footer>
-      )}
-    </main>
+              {/* Specifications spotlights */}
+              <LocationSpotlight 
+                onBookClick={() => changeView('booking')} 
+                turfDetails={turfDetails}
+              />
+
+              {/* Arena stats */}
+              <Stats turfDetails={turfDetails} />
+
+              {/* Image galleries */}
+              <Gallery turfDetails={turfDetails} />
+
+              {/* Booking CTA section */}
+              <FinalCTA onBookClick={() => changeView('booking')} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="booking-page"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.22, ease: 'easeInOut' }}
+            >
+              {/* Interactive Booking Module */}
+              <div className="pt-16">
+                <BookingWidget onBackToHome={() => changeView('landing')} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Dynamic branding footer */}
+      <Footer turfDetails={turfDetails} />
+    </div>
   );
 }
