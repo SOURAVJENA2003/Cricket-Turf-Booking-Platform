@@ -1,5 +1,5 @@
 .main {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -15,7 +15,6 @@
 
 .nav {
   display: flex;
-  align-items: center;
   gap: 15px;
 }
 
@@ -29,15 +28,6 @@
   color: #000;
 }
 
-.logoutBtn {
-  padding: 8px 16px;
-  background-color: #555;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -47,7 +37,7 @@
 }
 
 .table th, .table td {
-  padding: 15px;
+  padding: 12px 15px;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
@@ -57,13 +47,8 @@
   font-weight: bold;
 }
 
-.available {
+.confirmed {
   color: #2e7d32;
-  font-weight: bold;
-}
-
-.booked {
-  color: #d32f2f;
   font-weight: bold;
 }
 
@@ -72,32 +57,10 @@
   font-weight: bold;
 }
 
-.bookBtn {
-  padding: 8px 12px;
-  background-color: #d32f2f;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.clearBtn {
-  padding: 8px 12px;
-  background-color: #ef4444;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 8px;
-}
-
-.approveBtn {
-  padding: 8px 12px;
-  background-color: #22c55e;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.cancelled {
+  color: #999;
+  font-weight: bold;
+  text-decoration: line-through;
 }
 
 .backLink {
@@ -107,14 +70,21 @@
   text-decoration: none;
 }
 
-/* Responsive Table */
 .section {
   overflow-x: auto;
 }
 
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    gap: 15px;
-  }
+.error {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 10px 15px;
+  border-radius: 4px;
+}
+
+.noBookings {
+  text-align: center;
+  padding: 40px;
+  color: #777;
+  background-color: #f9f9f9;
+  border-radius: 8px;
 }

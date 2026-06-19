@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import styles from './page.module.css';
 
 export default function CancelPage() {
@@ -160,7 +161,7 @@ export default function CancelPage() {
         </div>
       )}
 
-      <a href="/" className={styles.homeLink}>Back to Home</a>
+      <Link href="/" className={styles.homeLink}>Back to Home</Link>
     </main>
   );
 }

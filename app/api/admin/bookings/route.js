@@ -1,14 +1,22 @@
 import db from '@/lib/db';
 const { query } = db;
 import { NextResponse } from 'next/server';
+import { getSessionCookie, verifyToken } from '@/lib/auth';
+
+// Helper to authenticate requests in this endpoint
+async function isAuthenticated(request) {
+  const token = getSessionCookie(request);
+  const verified = await verifyToken(token);
+  return !!verified;
+}
 
 export async function PATCH(request) {
   try {
-    const { slotId, adminPassword, status } = await request.json();
-
-    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    if (!(await isAuthenticated(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const { slotId, status } = await request.json();
 
     if (!slotId || !status) {
       return NextResponse.json({ error: 'Slot ID and Status are required' }, { status: 400 });
@@ -25,11 +33,11 @@ export async function PATCH(request) {
 
 export async function POST(request) {
   try {
-    const { slotId, adminPassword } = await request.json();
-
-    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    if (!(await isAuthenticated(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const { slotId } = await request.json();
 
     if (!slotId) {
       return NextResponse.json({ error: 'Slot ID is required' }, { status: 400 });
@@ -64,11 +72,11 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   try {
-    const { slotId, adminPassword } = await request.json();
-
-    if (adminPassword !== process.env.ADMIN_PASSWORD) {
+    if (!(await isAuthenticated(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const { slotId } = await request.json();
 
     if (!slotId) {
       return NextResponse.json({ error: 'Slot ID is required' }, { status: 400 });

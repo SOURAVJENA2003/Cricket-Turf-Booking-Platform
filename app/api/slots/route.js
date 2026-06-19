@@ -2,11 +2,11 @@ import db from '@/lib/db';
 const { query } = db;
 import { ensureSlotsForDate } from '@/lib/slot-utils';
 import { NextResponse } from 'next/server';
+import { getSessionCookie, verifyToken } from '@/lib/auth';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const date = searchParams.get('date');
-  const adminPassword = searchParams.get('adminPassword');
 
   if (!date) {
     return NextResponse.json({ error: 'Date is required' }, { status: 400 });
@@ -16,8 +16,12 @@ export async function GET(request) {
     // Automatically generate slots if they don't exist for the requested date
     await ensureSlotsForDate(date);
 
+    // Verify session via cookie
+    const token = getSessionCookie(request);
+    const verified = await verifyToken(token);
+
     let result;
-    if (adminPassword === process.env.ADMIN_PASSWORD) {
+    if (verified) {
       // Admin view: Join with bookings to get customer info
       result = await query(
         `SELECT s.*, b.customer_name, b.phone, b.booking_group_id, b.status, b.transaction_id 

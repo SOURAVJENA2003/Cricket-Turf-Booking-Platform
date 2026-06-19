@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import DatePicker from '@/components/DatePicker';
 import SlotGrid from '@/components/SlotGrid';
 import BookingModal from '@/components/BookingModal';
@@ -16,30 +17,46 @@ export default function Home() {
   const [error, setError] = useState('');
   const [completedBookingId, setCompletedBookingId] = useState(null); // Replaces successMessage
 
-  useEffect(() => {
-    fetchSlots();
-    setSelectedSlots([]); // Clear selection when date changes
-  }, [selectedDate]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const fetchSlots = async () => {
+  useEffect(() => {
+    let active = true;
+    const fetchSlots = async () => {
+      try {
+        const response = await fetch(`/api/slots?date=${selectedDate}`);
+        const data = await response.json();
+        if (active) {
+          if (response.ok) {
+            setSlots(data);
+            if (data.length === 0) {
+              setError('No slots found for this date. Please ensure the database is seeded.');
+            }
+          } else {
+            setError(data.error || 'Failed to fetch slots');
+          }
+        }
+      } catch (error) {
+        if (active) {
+          setError('Connection error: Could not reach the server.');
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchSlots();
+    return () => {
+      active = false;
+    };
+  }, [selectedDate, refreshTrigger]);
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    setSelectedSlots([]); // Clear selection when date changes
     setLoading(true);
     setError('');
-    try {
-      const response = await fetch(`/api/slots?date=${selectedDate}`);
-      const data = await response.json();
-      if (response.ok) {
-        setSlots(data);
-        if (data.length === 0) {
-          setError('No slots found for this date. Please ensure the database is seeded.');
-        }
-      } else {
-        setError(data.error || 'Failed to fetch slots');
-      }
-    } catch (error) {
-      setError('Connection error: Could not reach the server.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleSelectSlot = (slot) => {
@@ -79,7 +96,9 @@ export default function Home() {
     setIsModalOpen(false);
     setSelectedSlots([]);
     setCompletedBookingId(bookingGroupId); // Trigger the success modal
-    fetchSlots();
+    setLoading(true);
+    setError('');
+    setRefreshTrigger(prev => prev + 1);
   };
 
   const handleCloseSuccessModal = () => {
@@ -93,13 +112,13 @@ export default function Home() {
       <header className={styles.header}>
         <h1>Cricket Turf Booking</h1>
         <nav className={styles.nav}>
-          <a href="/cancel" className={styles.navLink}>Cancel Booking</a>
-          <a href="/admin/login" className={styles.navLink}>Admin Login</a>
+          <Link href="/cancel" className={styles.navLink}>Cancel Booking</Link>
+          <Link href="/admin/login" className={styles.navLink}>Admin Login</Link>
         </nav>
       </header>
 
       <section className={styles.bookingSection}>
-        <DatePicker selectedDate={selectedDate} onDateChange={setSelectedDate} />
+        <DatePicker selectedDate={selectedDate} onDateChange={handleDateChange} />
         
         {error && <div className={styles.error}>{error}</div>}
 
