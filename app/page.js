@@ -8,6 +8,7 @@ import FinalCTA from '@/components/FinalCTA';
 import Footer from '@/components/Footer';
 import Gallery from '@/components/Gallery';
 import LocationSpotlight from '@/components/LocationSpotlight';
+import ArenaSpecs from '@/components/ArenaSpecs';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function Home() {
@@ -103,6 +104,9 @@ export default function Home() {
                 onExploreClick={() => handleNavigateToSection('location-specs')} 
                 turfDetails={turfDetails}
               />
+
+              {/* Arena Specifications */}
+              <ArenaSpecs turfDetails={turfDetails} />
 
               {/* Specifications spotlights */}
               <LocationSpotlight 
