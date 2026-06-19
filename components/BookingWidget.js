@@ -619,7 +619,7 @@ export default function BookingWidget({ onBackToHome }) {
 
           {/* STEP 1: SCHEDULING (DATES & SLOTS SELECTOR) */}
           {step === 1 && checkoutStatus === 'idle' && (
-            <div className="space-y-8 animate-fade-in">
+            <div className={`space-y-8 animate-fade-in ${selectedSlots.length > 0 ? 'pb-52 md:pb-36' : ''}`}>
               
               {/* Date selection row */}
               <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-premium-soft">
