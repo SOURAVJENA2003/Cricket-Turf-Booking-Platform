@@ -28,10 +28,10 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
   const closeTime = turfDetails?.closeTime || "23:00";
 
   return (
-    <section id="location-specs" className="relative min-h-screen flex flex-row overflow-hidden border-b border-slate-200/40 font-sans text-left bg-white">
+    <section id="location-specs" className="relative min-h-screen flex flex-col md:flex-row overflow-hidden border-b border-slate-200/40 font-sans text-left bg-white">
       
       {/* Left Column: Slideshow (Edge-to-Edge full-screen left-half) */}
-      <div className="w-1/2 min-h-screen bg-slate-900 relative z-0">
+      <div className="w-full md:w-1/2 h-[380px] sm:h-[480px] md:h-auto md:min-h-screen bg-slate-900 relative z-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={photoIndex}
@@ -76,7 +76,7 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
       </div>
 
       {/* Right Column: Text content */}
-      <div className="w-1/2 min-h-screen flex flex-col justify-center pt-24 pb-12 px-4 sm:px-12 lg:px-20 xl:px-32 z-10 bg-gradient-to-br from-white via-slate-50/70 to-white relative overflow-hidden">
+      <div className="w-full md:w-1/2 min-h-fit md:min-h-screen flex flex-col justify-center pt-12 pb-16 md:pt-24 md:pb-12 px-6 sm:px-12 lg:px-20 xl:px-32 z-10 bg-gradient-to-br from-white via-slate-50/70 to-white relative overflow-hidden">
         {/* Subtle ambient light */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-[100px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
         
