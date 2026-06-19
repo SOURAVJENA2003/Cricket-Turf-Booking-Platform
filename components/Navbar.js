@@ -131,7 +131,7 @@ export default function Navbar({ currentView, setView, onNavigateToSection, turf
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-lg border-b border-slate-200 shadow-lg">
+        <div className="md:hidden bg-white/90 backdrop-blur-lg border-b border-slate-200/80 shadow-premium-tall">
           <div className="px-4 pt-2 pb-6 space-y-3 sm:px-3">
             <button
               onClick={() => {

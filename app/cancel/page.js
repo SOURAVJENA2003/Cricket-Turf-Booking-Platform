@@ -87,7 +87,7 @@ export default function CancelPage() {
 
   return (
     <main className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans py-12 md:py-20 flex flex-col justify-center items-center px-4">
-      <div className="max-w-md w-full bg-white border border-slate-200 rounded-3xl shadow-premium-tall p-6 md:p-8 relative overflow-hidden text-left">
+      <div className="max-w-md w-full bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-3xl shadow-premium-tall p-6 md:p-8 relative overflow-hidden text-left hover:border-emerald-500/20 transition-all duration-300">
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-500 to-amber-500" />
         
         {/* Breadcrumb Header */}
@@ -160,7 +160,7 @@ export default function CancelPage() {
                     className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between shadow-2xs select-none ${
                       isSelected
                         ? 'border-emerald-500 bg-emerald-50/20'
-                        : 'border-slate-200 bg-white hover:border-slate-350'
+                        : 'border-slate-200/60 bg-white/60 hover:bg-white/90 backdrop-blur-xs hover:border-slate-350'
                     }`}
                     onClick={() => toggleSelection(booking.booking_id)}
                   >

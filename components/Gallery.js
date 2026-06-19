@@ -81,7 +81,7 @@ export default function Gallery({ turfDetails }) {
     : galleryItems.filter(item => item.category === filter);
 
   return (
-    <section id="arena-gallery" className="bg-slate-50 border-b border-slate-200 py-16 md:py-24 relative overflow-hidden font-sans">
+    <section id="arena-gallery" className="bg-transparent border-b border-slate-200/40 py-16 md:py-24 relative overflow-hidden font-sans">
       <div className="absolute top-1/3 right-0 w-80 h-80 bg-emerald-100/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 left-0 w-72 h-72 bg-amber-50/20 rounded-full blur-[100px] pointer-events-none" />
 
@@ -115,7 +115,7 @@ export default function Gallery({ turfDetails }) {
               className={`px-4.5 py-1.5 text-xs font-bold uppercase tracking-wider rounded-lg border transition-all cursor-pointer ${
                 filter === tab.id 
                   ? 'bg-pitch-charcoal border-pitch-charcoal text-white shadow-sm' 
-                  : 'bg-white border-slate-200 hover:border-slate-350 text-pitch-slate-650 hover:text-pitch-charcoal'
+                  : 'bg-white/60 hover:bg-white/90 backdrop-blur-xs border-slate-200/80 hover:border-slate-350 text-pitch-slate-650 hover:text-pitch-charcoal'
               }`}
             >
               {tab.label}
@@ -138,7 +138,7 @@ export default function Gallery({ turfDetails }) {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.25 }}
                 whileHover={{ y: -6, transition: { duration: 0.18 } }}
-                className="group relative h-[250px] rounded-2xl bg-white border border-slate-200 shadow-xs overflow-hidden flex flex-col justify-end cursor-pointer animate-fade-in"
+                className="group relative h-[250px] rounded-2xl bg-white/70 backdrop-blur-xs border border-slate-200/60 shadow-premium-soft hover:shadow-brand-glow overflow-hidden flex flex-col justify-end cursor-pointer animate-fade-in transition-all duration-300"
                 onClick={() => setSelectedItem(item)}
               >
                 <img 

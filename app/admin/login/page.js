@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
 
   return (
     <main className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans py-12 md:py-20 flex flex-col justify-center items-center px-4">
-      <div className="max-w-sm w-full bg-white border border-slate-200 rounded-3xl shadow-premium-tall p-6 md:p-8 relative overflow-hidden text-left animate-fade-in">
+      <div className="max-w-sm w-full bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-3xl shadow-premium-tall p-6 md:p-8 relative overflow-hidden text-left animate-fade-in hover:border-emerald-500/20 transition-all duration-300">
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-500" />
         
         {/* Navigation Return */}

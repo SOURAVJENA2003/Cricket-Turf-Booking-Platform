@@ -133,7 +133,7 @@ export default function AdminDashboard() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 space-y-6">
         
         {/* Controls Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-premium-soft hover:border-emerald-500/25 transition-all duration-300">
           <div>
             <h2 className="text-lg font-display font-black text-pitch-charcoal leading-none">Slot Operations</h2>
             <p className="text-xs text-pitch-slate-550 mt-1 font-sans">Manage daily time schedule availability, block slot matrices, or confirm pending customer checkouts.</p>
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Dynamic Slots Table card container */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden text-left">
+        <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-premium-tall overflow-hidden text-left hover:border-emerald-500/10 transition-all duration-300">
           {loading ? (
             <div className="py-20 text-center text-xs text-slate-400 font-sans italic animate-pulse">
               Synchronizing slot details with database...
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-400 font-black uppercase tracking-wider">
+                  <tr className="bg-slate-100/50 border-b border-slate-200/60 text-slate-400 font-black uppercase tracking-wider">
                     <th className="p-4">Time Interval</th>
                     <th className="p-4">Price</th>
                     <th className="p-4">Status</th>

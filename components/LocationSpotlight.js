@@ -29,7 +29,7 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
   const closeTime = turfDetails?.closeTime || "23:00";
 
   return (
-    <section id="location-specs" className="bg-white border-b border-slate-100 py-10 md:py-16 relative overflow-hidden font-sans text-left">
+    <section id="location-specs" className="bg-transparent border-b border-slate-200/40 py-10 md:py-16 relative overflow-hidden font-sans text-left">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
@@ -148,7 +148,7 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
           <div className="lg:col-span-4 flex flex-col space-y-4">
             
             {/* TIMING details box */}
-            <div className="border border-slate-200 hover:border-slate-350 rounded-xl p-5 bg-white text-left space-y-2 transition-all shadow-xs">
+            <div className="border border-slate-200/60 hover:border-emerald-500/25 rounded-2xl p-5 bg-white/70 backdrop-blur-md text-left space-y-2 transition-all duration-300 shadow-premium-soft hover:shadow-brand-glow">
               <div className="flex items-center space-x-2 pb-2.5 border-b border-slate-100">
                 <Clock className="w-4 h-4 text-emerald-650" />
                 <h4 className="text-xs font-black uppercase tracking-wider text-pitch-charcoal">Timing</h4>
@@ -162,7 +162,7 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
             </div>
 
             {/* LOCATION details box */}
-            <div className="border border-slate-200 hover:border-slate-350 rounded-xl p-5 bg-white text-left space-y-4 transition-all shadow-xs">
+            <div className="border border-slate-200/60 hover:border-emerald-500/25 rounded-2xl p-5 bg-white/70 backdrop-blur-md text-left space-y-4 transition-all duration-300 shadow-premium-soft hover:shadow-brand-glow">
               <div className="flex items-center space-x-2 pb-2.5 border-b border-slate-100">
                 <MapPin className="w-4 h-4 text-emerald-650" />
                 <h4 className="text-xs font-black uppercase tracking-wider text-pitch-charcoal">Location</h4>
@@ -180,11 +180,11 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
                 href={mapsUrl} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="relative h-32 rounded-lg border border-slate-150 overflow-hidden bg-slate-50 flex items-center justify-center group focus-within:ring-2 focus-within:ring-emerald-500"
+                className="relative h-32 rounded-xl border border-slate-200/60 overflow-hidden bg-slate-100/40 flex items-center justify-center group focus-within:ring-2 focus-within:ring-emerald-500 shadow-premium-soft transition-all duration-300 hover:border-emerald-500/25"
               >
-                <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:12px_12px] opacity-75" />
+                <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:12px_12px] opacity-60" />
                 <div className="absolute inset-0 bg-slate-100/10 hover:bg-slate-100/0 transition-colors" />
-                <div className="z-10 bg-white border border-slate-200 shadow-sm rounded-lg p-2.5 flex items-center space-x-2 group-hover:scale-103 transition-all cursor-pointer">
+                <div className="z-10 bg-white/90 backdrop-blur-xs border border-slate-200 shadow-sm rounded-lg p-2.5 flex items-center space-x-2 group-hover:scale-103 transition-all cursor-pointer">
                   <MapPin className="w-4 h-4 text-emerald-600 animate-bounce" />
                   <div className="text-[10px] text-left">
                     <span className="font-bold text-pitch-charcoal block">View Interactive Map</span>

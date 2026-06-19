@@ -56,7 +56,7 @@ export default async function AdminBookingsPage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 space-y-6">
         
         {/* Title Dashboard segment */}
-        <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs text-left">
+        <div className="flex items-center justify-between bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-premium-soft hover:border-emerald-500/25 transition-all duration-300 text-left">
           <div>
             <h2 className="text-lg font-display font-black text-pitch-charcoal leading-none">Reservations Ledger</h2>
             <p className="text-xs text-pitch-slate-550 mt-1 font-sans">View complete chronological history of user bookings, registration credentials, and gateway UTR codes.</p>
@@ -64,7 +64,7 @@ export default async function AdminBookingsPage() {
         </div>
 
         {/* ledger list card */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden text-left">
+        <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-premium-tall overflow-hidden text-left hover:border-emerald-500/10 transition-all duration-300">
           {error ? (
             <div className="py-20 text-center text-xs text-red-500 font-sans font-bold">
               {error}
@@ -77,7 +77,7 @@ export default async function AdminBookingsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-400 font-black uppercase tracking-wider">
+                  <tr className="bg-slate-100/50 border-b border-slate-200/60 text-slate-400 font-black uppercase tracking-wider">
                     <th className="p-4">Timestamp (IST)</th>
                     <th className="p-4">Play Date</th>
                     <th className="p-4">Time range</th>

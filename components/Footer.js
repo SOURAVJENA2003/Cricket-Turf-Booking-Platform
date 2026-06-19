@@ -21,7 +21,7 @@ export default function Footer({ turfDetails }) {
   const locationText = address.includes("Jeypore") ? "Jeypore, OD" : "Odisha, IN";
 
   return (
-    <footer className="bg-slate-50 text-pitch-slate-500 py-10 border-t border-slate-200 font-sans text-left">
+    <footer className="bg-slate-100/40 backdrop-blur-md text-pitch-slate-500 py-10 border-t border-slate-200/60 font-sans text-left">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
         {/* Minimalist Stats Row */}

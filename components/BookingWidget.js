@@ -398,7 +398,7 @@ export default function BookingWidget({ onBackToHome }) {
   const turfName = turfDetails?.name || "Runmakers Arena Box Cricket";
 
   return (
-    <div className="py-6 md:py-12 bg-[#fafafa] min-h-screen text-pitch-slate-800 font-sans text-left">
+    <div className="py-6 md:py-12 bg-transparent min-h-screen text-pitch-slate-800 font-sans text-left">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         
         {/* Navigation / Header */}
@@ -445,7 +445,7 @@ export default function BookingWidget({ onBackToHome }) {
             <div className="lg:col-span-8 space-y-5">
 
               {/* DATE PICKER */}
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-premium-soft hover:border-emerald-500/20 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xs font-bold uppercase text-pitch-slate-400 tracking-wider">Select Play Date</h3>
                   <span className="text-[10px] bg-slate-100 text-pitch-slate-650 px-2 py-0.5 rounded font-bold">5 Days Open</span>
@@ -483,12 +483,12 @@ export default function BookingWidget({ onBackToHome }) {
               </div>
 
               {/* SLOTS GRID */}
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/60 shadow-premium-soft hover:border-emerald-500/20 transition-all duration-300">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 mb-4 border-b border-slate-100">
                   <h3 className="text-xs font-bold uppercase text-pitch-slate-400 tracking-wider">Select Play Timings</h3>
                   
                   {/* CATEGORY FILTER TABS */}
-                  <div className="flex items-center space-x-1 bg-slate-105 bg-slate-100 p-1 rounded-lg">
+                  <div className="flex items-center space-x-1 bg-slate-100/50 backdrop-blur-xs p-1 rounded-lg border border-slate-200/40">
                     {['All', 'Morning', 'Afternoon', 'Evening', 'Night'].map((cat) => (
                       <button
                         key={cat}
@@ -542,7 +542,7 @@ export default function BookingWidget({ onBackToHome }) {
                                 ? 'bg-slate-50 border-slate-200 text-slate-300 pointer-events-none'
                                 : isSelected
                                   ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm ring-1 ring-emerald-500/50 scale-102 font-bold'
-                                  : 'bg-white border-slate-200 hover:border-slate-350 text-pitch-charcoal hover:bg-slate-50'
+                                  : 'bg-white/60 backdrop-blur-xs border-slate-200 hover:border-emerald-500/35 text-pitch-charcoal hover:bg-white/95 shadow-2xs'
                             }`}
                           >
                             <span className="text-xs font-black tracking-tight">{slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}</span>
@@ -587,7 +587,7 @@ export default function BookingWidget({ onBackToHome }) {
 
             {/* Right Column: Checkout Summary Box */}
             <div className="lg:col-span-4 lg:sticky lg:top-24">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 relative overflow-hidden">
+              <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-premium-tall p-5 relative overflow-hidden hover:border-emerald-500/20 transition-all duration-300">
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 to-amber-400" />
                 
                 <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-wider mb-4 pb-2 border-b border-slate-100">
@@ -611,7 +611,7 @@ export default function BookingWidget({ onBackToHome }) {
                 {selectedSlots.length > 0 ? (
                   <div className="space-y-2 border-t border-slate-100 pt-4 mb-4 text-xs">
                     
-                    <div className="p-2.5 bg-slate-50 border border-slate-150 rounded-lg flex flex-col space-y-1">
+                    <div className="p-2.5 bg-slate-100/60 border border-slate-200/60 rounded-lg flex flex-col space-y-1">
                       <span className="text-[9px] font-black text-slate-400 uppercase">Selected slots</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {selectedSlots.map(s => (
@@ -647,7 +647,7 @@ export default function BookingWidget({ onBackToHome }) {
                     </div>
                   </div>
                 ) : (
-                  <div className="py-10 text-center text-xs text-slate-400 italic border-2 border-dashed border-slate-150 rounded-xl bg-slate-50/50">
+                  <div className="py-10 text-center text-xs text-slate-400 italic border border-dashed border-slate-200 rounded-xl bg-white/40 backdrop-blur-xs shadow-2xs">
                     💡 Select timing blocks to calculate prices.
                   </div>
                 )}
@@ -659,13 +659,13 @@ export default function BookingWidget({ onBackToHome }) {
 
         {/* STEP 2: Input Customer Form Details */}
         {step === 2 && checkoutStatus === 'idle' && (
-          <div className="max-w-md mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-6 relative overflow-hidden my-8 animate-fade-in">
+          <div className="max-w-md mx-auto bg-white/85 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-premium-tall p-6 relative overflow-hidden my-8 animate-fade-in hover:border-emerald-500/20 transition-all duration-300">
             <div className="absolute top-0 inset-x-0 h-1 bg-emerald-500" />
             <h2 className="text-lg font-black text-pitch-charcoal border-b border-slate-100 pb-3 mb-5">
               Confirm Player Details
             </h2>
 
-            <div className="p-3 bg-slate-50 rounded-xl border border-slate-150 mb-5 text-xs text-pitch-slate-700 space-y-1.5 font-mono">
+            <div className="p-3 bg-slate-100/65 rounded-xl border border-slate-200/60 mb-5 text-xs text-pitch-slate-700 space-y-1.5 font-mono">
               <p><strong>Selected Date:</strong> {formatLocalDateString(selectedDateIso)}</p>
               <p><strong>Timings:</strong> {selectedSlots[0].start_time.slice(0, 5)} - {selectedSlots[selectedSlots.length - 1].end_time.slice(0, 5)}</p>
               <p><strong>Total Due:</strong> ₹{priceCalculation.finalTotal}</p>
@@ -719,7 +719,7 @@ export default function BookingWidget({ onBackToHome }) {
 
         {/* STEP 3: Payment Modes Verification */}
         {step === 3 && checkoutStatus === 'idle' && (
-          <div className="max-w-md mx-auto bg-white border border-slate-200 rounded-2xl shadow-sm p-6 relative overflow-hidden my-8 animate-fade-in">
+          <div className="max-w-md mx-auto bg-white/85 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-premium-tall p-6 relative overflow-hidden my-8 animate-fade-in hover:border-emerald-500/20 transition-all duration-300">
             <div className="absolute top-0 inset-x-0 h-1 bg-emerald-500" />
             <h2 className="text-lg font-black text-pitch-charcoal border-b border-slate-100 pb-3 mb-5 text-left">
               {config?.paymentMode === 'razorpay' ? 'Secure Checkout Gateway' : 'Manual Scan & Pay'}
@@ -753,7 +753,7 @@ export default function BookingWidget({ onBackToHome }) {
             ) : (
               // UPI MANUAL VIEW
               <form onSubmit={handleUpiSubmit} className="space-y-5">
-                <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-50 border border-slate-150 p-4 rounded-xl">
+                <div className="flex flex-col sm:flex-row items-center gap-4 bg-slate-100/60 border border-slate-200/60 p-4 rounded-xl">
                   <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-2xs">
                     <QRCodeSVG value={upiUrl} size={110} />
                   </div>
@@ -806,7 +806,7 @@ export default function BookingWidget({ onBackToHome }) {
 
         {/* LOADING PROCESSING OVERLAY */}
         {checkoutStatus === 'processing' && (
-          <div className="min-h-[320px] flex flex-col items-center justify-center bg-white border border-slate-200 rounded-2xl py-10 px-6 max-w-sm mx-auto shadow-sm relative overflow-hidden my-12 text-center animate-fade-in">
+          <div className="min-h-[320px] flex flex-col items-center justify-center bg-white/80 backdrop-blur-md border border-slate-200/80 rounded-2xl py-10 px-6 max-w-sm mx-auto shadow-premium-tall relative overflow-hidden my-12 text-center animate-fade-in">
             <div className="absolute top-0 inset-x-0 h-1 bg-emerald-500" />
             
             <div className="relative flex items-center justify-center w-12 h-12 rounded-full border border-slate-100 bg-slate-50 mb-4 animate-spin">
@@ -825,7 +825,7 @@ export default function BookingWidget({ onBackToHome }) {
 
         {/* TICKET STUB SUCCESS CONFIRMATION */}
         {checkoutStatus === 'done' && generatedTicket && (
-          <div className="max-w-md mx-auto bg-white border border-slate-250 rounded-2xl shadow-lg relative overflow-hidden my-6 animate-fade-in text-left">
+          <div className="max-w-md mx-auto bg-white/90 backdrop-blur-md border border-slate-250/70 rounded-2xl shadow-premium-tall relative overflow-hidden my-6 animate-fade-in text-left hover:border-emerald-500/20 transition-all duration-300">
             <div className="h-1 bg-gradient-to-r from-emerald-500 to-teal-400" />
 
             <div className="p-5">

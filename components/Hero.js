@@ -36,7 +36,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
   const closeTime = turfDetails?.closeTime || "23:00";
 
   return (
-    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-white border-b border-slate-100 font-sans">
+    <section className="relative pt-24 pb-16 md:pt-32 md:pb-24 overflow-hidden bg-transparent border-b border-slate-200/40 font-sans">
       {/* Decorative premium background meshes */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-50/40 rounded-full blur-[130px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-amber-50/30 rounded-full blur-[120px] pointer-events-none" />
@@ -53,7 +53,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
             {/* Premium display headings */}
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-display font-extrabold text-pitch-charcoal tracking-tight leading-[1.12]">
               Hit Runs in Style at <br />
-              <span className="bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent">
                 {name}
               </span>
             </h1>
@@ -87,7 +87,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
 
               <button
                 onClick={onExploreClick}
-                className="group inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-slate-350 text-pitch-charcoal font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                className="group inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white/60 hover:bg-white/90 backdrop-blur-xs border border-slate-200/80 hover:border-slate-350 text-pitch-charcoal font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
               >
                 Learn Features
                 <ArrowRight className="w-4 h-4 ml-2 text-slate-400 group-hover:translate-x-1 transition-transform" />
@@ -109,7 +109,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.55, delay: 0.1 }}
           >
-            <div className="relative w-full max-w-[430px] aspect-[4/5] rounded-3xl bg-slate-100 border border-slate-200 shadow-premium-tall overflow-hidden group">
+            <div className="relative w-full max-w-[430px] aspect-[4/5] rounded-3xl bg-slate-100 border border-slate-200/60 hover:border-emerald-500/35 shadow-premium-tall overflow-hidden transition-all duration-300 group">
               
               {/* Slideshow image switcher wrapper */}
               <AnimatePresence mode="wait">

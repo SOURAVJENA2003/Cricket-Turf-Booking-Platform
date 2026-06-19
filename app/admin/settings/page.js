@@ -174,7 +174,7 @@ export default function AdminSettingsPage() {
       <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 space-y-6 text-left">
         
         {/* Title panel */}
-        <div className="flex items-center justify-between bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+        <div className="flex items-center justify-between bg-white/80 backdrop-blur-md p-5 rounded-2xl border border-slate-200/80 shadow-premium-soft hover:border-emerald-500/25 transition-all duration-300">
           <div>
             <h2 className="text-lg font-display font-black text-pitch-charcoal leading-none">Console Settings</h2>
             <p className="text-xs text-pitch-slate-550 mt-1 font-sans">Modify operating timing structures, default prices, payment modes, and profile branding decals.</p>
@@ -182,7 +182,7 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Form panel card */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
+        <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-premium-tall p-6 md:p-8 hover:border-emerald-500/10 transition-all duration-300">
           
           {success && (
             <div className="bg-emerald-50 text-emerald-800 border border-emerald-150 p-4 rounded-xl font-bold text-xs mb-6 flex items-center gap-2">
