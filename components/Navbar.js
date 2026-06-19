@@ -32,7 +32,7 @@ export default function Navbar({ currentView, setView, onNavigateToSection, turf
   const mainName = nameParts.slice(0, 2).join(" ") || nameParts[0];
   const badgeName = nameParts.length > 2 ? nameParts.slice(2).join(" ") : "ARENA";
 
-  const isGreenHeader = isScrolled || currentView === 'booking';
+  const isGreenHeader = true;
 
   return (
     <header
