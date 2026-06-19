@@ -29,27 +29,35 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
   const closeTime = turfDetails?.closeTime || "23:00";
 
   return (
-    <section id="location-specs" className="bg-white border-b border-slate-200/40 py-10 md:py-16 relative overflow-hidden font-sans text-left">
-      
+    <section id="location-specs" className="relative py-10 md:py-16 overflow-hidden font-sans text-left border-b border-slate-200/40">
+      {/* Split background: Left 66.667% (8 cols) is green, Right 33.333% (4 cols) is white. On smaller screens, top 72% is green, bottom 28% is white. */}
+      <div className="absolute inset-0 flex flex-col lg:flex-row pointer-events-none z-0">
+        <div className="w-full lg:w-[66.667%] h-[72%] lg:h-full bg-emerald-600" />
+        <div className="w-full lg:w-[33.333%] h-[28%] lg:h-full bg-white" />
+      </div>
+
+      {/* Decorative gradient overlay on green side */}
+      <div className="absolute top-0 left-0 w-full lg:w-[66.667%] h-[72%] lg:h-full blur-[120px] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(5, 150, 105, 0.25) 0%, transparent 70%)' }} />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Breadcrumbs */}
-        <div className="flex items-center space-x-1.5 text-xs text-pitch-slate-400 font-semibold mb-3">
-          <span className="hover:text-pitch-charcoal transition-colors cursor-pointer">Venues</span>
+        <div className="flex items-center space-x-1.5 text-xs text-emerald-250 font-semibold mb-3">
+          <span className="hover:text-white transition-colors cursor-pointer">Venues</span>
           <span>&gt;</span>
-          <span className="hover:text-pitch-charcoal transition-colors cursor-pointer">Odisha</span>
+          <span className="hover:text-white transition-colors cursor-pointer">Odisha</span>
           <span>&gt;</span>
-          <span className="text-pitch-charcoal font-bold">{name}</span>
+          <span className="text-white font-bold">{name}</span>
         </div>
 
         {/* Title block */}
         <div className="mb-6">
-          <h2 className="text-2xl sm:text-3xl font-display font-black text-pitch-charcoal tracking-tight">
+          <h2 className="text-2xl sm:text-3.5xl font-display font-black text-white tracking-tight">
             {name}
           </h2>
           
           <div className="flex flex-wrap items-center gap-y-2 gap-x-4 mt-2 text-sm">
-            <span className="text-pitch-slate-650 font-medium truncate max-w-[500px]">
+            <span className="text-emerald-100 font-medium truncate max-w-[500px]">
               {address}
             </span>
             
@@ -58,8 +66,8 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
               <span>5.0 (280+ ratings)</span>
             </div>
 
-            <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded text-xs font-bold">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            <span className="inline-flex items-center gap-1 text-white bg-emerald-700/60 border border-emerald-500/50 px-2 py-0.5 rounded text-xs font-bold font-mono">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-300 animate-pulse" />
               Verified Sports Club
             </span>
           </div>
@@ -70,7 +78,7 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
           
           {/* Left Column: Image Slider */}
           <div className="lg:col-span-8 space-y-4">
-            <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-slate-900 border border-slate-200 overflow-hidden shadow-premium-tall group">
+            <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-slate-900 border border-white/10 overflow-hidden shadow-premium-tall group">
               
               <AnimatePresence mode="wait">
                 <motion.img 
@@ -129,16 +137,16 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
 
             {/* Pill strip */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
-              <span className="text-xs font-semibold text-pitch-slate-650 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
+              <span className="text-xs font-semibold text-emerald-100 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg backdrop-blur-xs font-mono">
                 ⚽ Enclosed Safety Netting
               </span>
-              <span className="text-xs font-semibold text-pitch-slate-650 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
+              <span className="text-xs font-semibold text-emerald-100 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg backdrop-blur-xs font-mono">
                 🏏 Bowling Machine Provision
               </span>
-              <span className="text-xs font-semibold text-pitch-slate-650 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
+              <span className="text-xs font-semibold text-emerald-100 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg backdrop-blur-xs font-mono">
                 💡 Anti-Glare Floodlights
               </span>
-              <span className="text-xs font-semibold text-pitch-slate-650 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
+              <span className="text-xs font-semibold text-emerald-100 bg-white/10 border border-white/10 px-3 py-1.5 rounded-lg backdrop-blur-xs font-mono">
                 🚗 Free Parking Area
               </span>
             </div>
