@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import DatePicker from '@/components/DatePicker';
+import AdminHeader from '@/components/AdminHeader';
 import { getIstTodayString } from '@/lib/date-utils';
-import { LayoutDashboard, CalendarRange, Settings, LogOut, Check, Ban, RefreshCw, Undo } from 'lucide-react';
+import { LayoutDashboard, CalendarRange, Settings, Check, Ban, RefreshCw, Undo } from 'lucide-react';
 
 export default function AdminDashboard() {
   const [selectedDate, setSelectedDate] = useState(getIstTodayString());
@@ -48,20 +49,6 @@ export default function AdminDashboard() {
     setLoading(true);
   };
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/admin/logout', { method: 'POST' });
-      const data = await response.json();
-      if (response.ok && data.success) {
-        router.push('/admin/login');
-        router.refresh();
-      } else {
-        alert((data && data.message) || 'Logout failed');
-      }
-    } catch (err) {
-      console.error('Logout error:', err);
-    }
-  };
 
   const handleAdminAction = async (slotId, isBooked, newStatus = null) => {
     let method = isBooked ? 'DELETE' : 'POST';
@@ -99,35 +86,7 @@ export default function AdminDashboard() {
   return (
     <main className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans pb-12">
       {/* Admin Sticky Navigation Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm select-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500 text-white">
-              <LayoutDashboard className="w-4.5 h-4.5" />
-            </div>
-            <span className="text-sm font-display font-extrabold tracking-tight text-pitch-charcoal">
-              CREASEPRO<span className="text-emerald-700 text-[9px] border border-emerald-300 px-1 py-0.5 rounded ml-1 bg-emerald-50">CONSOLE</span>
-            </span>
-          </div>
-
-          <nav className="flex items-center space-x-6">
-            <Link href="/admin/bookings" className="text-xs font-bold uppercase tracking-wider text-pitch-slate-500 hover:text-pitch-charcoal transition-colors flex items-center gap-1.5">
-              <CalendarRange className="w-4 h-4" /> Bookings
-            </Link>
-            <Link href="/admin/settings" className="text-xs font-bold uppercase tracking-wider text-pitch-slate-500 hover:text-pitch-charcoal transition-colors flex items-center gap-1.5">
-              <Settings className="w-4 h-4" /> Settings
-            </Link>
-            <button 
-              onClick={handleLogout} 
-              className="text-xs font-bold uppercase tracking-wider text-red-650 hover:text-red-800 text-red-600 transition-colors flex items-center gap-1.5 cursor-pointer"
-            >
-              <LogOut className="w-4 h-4" /> Sign Out
-            </button>
-          </nav>
-
-        </div>
-      </header>
+      <AdminHeader activePage="slots" />
 
       {/* Main Admin dashboard content */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 space-y-6">

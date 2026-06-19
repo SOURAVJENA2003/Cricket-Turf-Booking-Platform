@@ -136,3 +136,27 @@ export async function DELETE(request) {
     return NextResponse.json({ success: false, message: error.message || 'Internal Server Error' }, { status: 500 });
   }
 }
+
+export async function GET(request) {
+  try {
+    if (!(await isAuthenticated(request))) {
+      return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const result = await query(
+      `SELECT b.id, b.slot_id, b.customer_name, b.phone, b.booking_group_id, b.transaction_id, b.status, b.created_at,
+              s.date, s.start_time, s.end_time, s.price
+       FROM bookings b
+       JOIN slots s ON b.slot_id = s.id
+       ORDER BY s.date DESC, s.start_time DESC`
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error('Admin fetch bookings error:', error);
+    return NextResponse.json({ success: false, message: error.message || 'Internal Server Error' }, { status: 500 });
+  }
+}

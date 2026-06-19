@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AdminHeader from '@/components/AdminHeader';
 import { LayoutDashboard, CalendarRange, Settings, Save, Sparkles, ChevronLeft } from 'lucide-react';
 
 export default function AdminSettingsPage() {
@@ -124,18 +125,7 @@ export default function AdminSettingsPage() {
   if (loading) {
     return (
       <main className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans pb-12">
-        <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm select-none">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500 text-white">
-                <Settings className="w-4.5 h-4.5" />
-              </div>
-              <span className="text-sm font-display font-extrabold tracking-tight text-pitch-charcoal">
-                CREASEPRO<span className="text-emerald-700 text-[9px] border border-emerald-300 px-1 py-0.5 rounded ml-1 bg-emerald-50">CONSOLE</span>
-              </span>
-            </div>
-          </div>
-        </header>
+        <AdminHeader activePage="settings" />
         <div className="pt-28 max-w-xl mx-auto text-xs text-slate-400 font-sans italic animate-pulse py-12">
           Loading settings configuration...
         </div>
@@ -146,29 +136,7 @@ export default function AdminSettingsPage() {
   return (
     <main className="min-h-screen bg-pitch-canvas text-pitch-slate-800 font-sans pb-12">
       {/* Navigation Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 py-4 shadow-sm select-none">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500 text-white">
-              <Settings className="w-4.5 h-4.5" />
-            </div>
-            <span className="text-sm font-display font-extrabold tracking-tight text-pitch-charcoal">
-              CREASEPRO<span className="text-emerald-700 text-[9px] border border-emerald-300 px-1 py-0.5 rounded ml-1 bg-emerald-50">CONSOLE</span>
-            </span>
-          </div>
-
-          <nav className="flex items-center space-x-6">
-            <Link href="/admin" className="text-xs font-bold uppercase tracking-wider text-pitch-slate-500 hover:text-pitch-charcoal transition-colors flex items-center gap-1.5">
-              <LayoutDashboard className="w-4 h-4" /> Slot Manager
-            </Link>
-            <Link href="/admin/bookings" className="text-xs font-bold uppercase tracking-wider text-pitch-slate-500 hover:text-pitch-charcoal transition-colors flex items-center gap-1.5">
-              <CalendarRange className="w-4 h-4" /> Bookings
-            </Link>
-          </nav>
-
-        </div>
-      </header>
+      <AdminHeader activePage="settings" />
 
       {/* Main Settings Page content */}
       <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 space-y-6 text-left">
