@@ -50,6 +50,14 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
           >
+            {/* Top Trending Badge */}
+            <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-white/70 backdrop-blur-xs border border-slate-200/50 rounded-full shadow-xs w-fit select-none animate-bounce">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-800">
+                Premium Sports Venue
+              </span>
+            </div>
+
             {/* Premium display headings */}
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-display font-extrabold text-pitch-charcoal tracking-tight leading-[1.12]">
               Hit Runs in Style at <br />
@@ -63,15 +71,38 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
               {tagline}
             </p>
 
-            {/* Specs list */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg pt-1">
-              <div className="flex items-center space-x-2.5 text-xs font-bold text-pitch-charcoal">
-                <span className="flex-shrink-0 w-4 h-4 rounded-full bg-emerald-100 border border-emerald-250 flex items-center justify-center text-emerald-800 text-[10px]">✓</span>
-                <span>Double-Cushioned Shock Grass</span>
+            {/* Premium Spec Chips Grid */}
+            <div className="grid grid-cols-2 gap-3 max-w-lg pt-1 select-none">
+              <div className="flex items-center space-x-2.5 p-3 rounded-2xl bg-white/60 backdrop-blur-xs border border-slate-200/50 shadow-2xs hover:border-emerald-500/25 transition-all">
+                <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 text-sm">🏟️</span>
+                <div className="text-left leading-none">
+                  <span className="text-[9px] text-pitch-slate-500 block font-bold uppercase tracking-wider">Surface</span>
+                  <span className="text-xs font-black text-pitch-charcoal block mt-1">Cushioned Turf</span>
+                </div>
               </div>
-              <div className="flex items-center space-x-2.5 text-xs font-bold text-pitch-charcoal">
-                <span className="flex-shrink-0 w-4 h-4 rounded-full bg-emerald-100 border border-emerald-250 flex items-center justify-center text-emerald-800 text-[10px]">✓</span>
-                <span>Active {openTime} – {closeTime} Daily</span>
+              
+              <div className="flex items-center space-x-2.5 p-3 rounded-2xl bg-white/60 backdrop-blur-xs border border-slate-200/50 shadow-2xs hover:border-emerald-500/25 transition-all">
+                <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 text-sm">💡</span>
+                <div className="text-left leading-none">
+                  <span className="text-[9px] text-pitch-slate-500 block font-bold uppercase tracking-wider">Lighting</span>
+                  <span className="text-xs font-black text-pitch-charcoal block mt-1">Zero-Shadow LED</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2.5 p-3 rounded-2xl bg-white/60 backdrop-blur-xs border border-slate-200/50 shadow-2xs hover:border-emerald-500/25 transition-all">
+                <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 text-sm">🕒</span>
+                <div className="text-left leading-none">
+                  <span className="text-[9px] text-pitch-slate-500 block font-bold uppercase tracking-wider">Hours</span>
+                  <span className="text-xs font-black text-pitch-charcoal block mt-1">{openTime} - {closeTime}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2.5 p-3 rounded-2xl bg-white/60 backdrop-blur-xs border border-slate-200/50 shadow-2xs hover:border-emerald-500/25 transition-all">
+                <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 text-sm">🎟️</span>
+                <div className="text-left leading-none">
+                  <span className="text-[9px] text-pitch-slate-500 block font-bold uppercase tracking-wider">Passcode</span>
+                  <span className="text-xs font-black text-pitch-charcoal block mt-1">Smart Gate PIN</span>
+                </div>
               </div>
             </div>
 
@@ -87,7 +118,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
 
               <button
                 onClick={onExploreClick}
-                className="group inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white/60 hover:bg-white/90 backdrop-blur-xs border border-slate-200/80 hover:border-slate-350 text-pitch-charcoal font-bold text-xs uppercase tracking-wider transition-all cursor-pointer"
+                className="group inline-flex items-center justify-center px-6 py-3.5 rounded-xl bg-white/75 hover:bg-white/95 backdrop-blur-xs border border-slate-200 hover:border-slate-350 text-pitch-charcoal font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-2xs hover:scale-[1.01]"
               >
                 Learn Features
                 <ArrowRight className="w-4 h-4 ml-2 text-slate-400 group-hover:translate-x-1 transition-transform" />
@@ -109,7 +140,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.55, delay: 0.1 }}
           >
-            <div className="relative w-full max-w-[430px] aspect-[4/5] rounded-3xl bg-slate-100 border border-slate-200/60 hover:border-emerald-500/35 shadow-premium-tall overflow-hidden transition-all duration-300 group">
+            <div className="relative w-full max-w-[430px] aspect-[4/5] rounded-3xl bg-slate-100 border border-slate-200/60 hover:border-emerald-500/35 shadow-premium-tall hover:shadow-[0_20px_50px_rgba(16,185,129,0.12)] overflow-hidden transition-all duration-300 group">
               
               {/* Slideshow image switcher wrapper */}
               <AnimatePresence mode="wait">
