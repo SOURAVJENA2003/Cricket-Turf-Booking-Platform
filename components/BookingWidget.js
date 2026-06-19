@@ -944,7 +944,7 @@ export default function BookingWidget({ onBackToHome }) {
           )}
 
           {/* STEP 3: PAYMENT INTERACTION GATEWAY */}
-          {step === 3 && (
+          {step === 3 && checkoutStatus !== 'done' && (
             <div className="max-w-2xl mx-auto bg-white border border-slate-200/80 rounded-3xl shadow-premium-tall overflow-hidden p-6 sm:p-10 animate-fade-in">
               <div className="mb-6 select-none">
                 <span className="text-[9px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-550/10 border border-emerald-550/20 px-3 py-1 rounded-md">
