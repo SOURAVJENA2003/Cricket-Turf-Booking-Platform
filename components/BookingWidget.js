@@ -30,7 +30,7 @@ export default function BookingWidget({ onBackToHome }) {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    const formatter = new Intl.DateTimeFormat('en-CA', {
+    const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'Asia/Kolkata',
       year: 'numeric',
       month: '2-digit',
@@ -41,9 +41,13 @@ export default function BookingWidget({ onBackToHome }) {
     for (let i = 0; i < 30; i++) {
       const timeInIst = now + i * 24 * 60 * 60 * 1000;
       const d = new Date(timeInIst);
-      const isoString = formatter.format(d);
       
-      const [yearStr, monthStr, dayStr] = isoString.split('-');
+      const parts = formatter.formatToParts(d);
+      const yearStr = parts.find(p => p.type === 'year').value;
+      const monthStr = parts.find(p => p.type === 'month').value;
+      const dayStr = parts.find(p => p.type === 'day').value;
+      
+      const isoString = `${yearStr}-${monthStr}-${dayStr}`;
       const parsedDayNum = parseInt(dayStr, 10);
       const parsedMonthIdx = parseInt(monthStr, 10) - 1;
       
@@ -632,6 +636,7 @@ export default function BookingWidget({ onBackToHome }) {
                     const isSelected = selectedDateIso === date.isoString;
                     return (
                       <button
+                        type="button"
                         key={date.isoString}
                         onClick={() => {
                           setSelectedDateIso(date.isoString);
@@ -671,6 +676,7 @@ export default function BookingWidget({ onBackToHome }) {
                   <div className="flex flex-wrap gap-1 p-1 bg-slate-100/70 border border-slate-200/60 rounded-xl w-fit">
                     {['All', 'Morning', 'Afternoon', 'Evening', 'Night'].map((cat) => (
                       <button
+                        type="button"
                         key={cat}
                         onClick={() => setSelectedCategory(cat)}
                         className={`px-3 py-1.5 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all duration-200 cursor-pointer ${
@@ -698,70 +704,84 @@ export default function BookingWidget({ onBackToHome }) {
                 )}
 
                 {/* Timing slot cards grid */}
-                <div>
-                  {loading ? (
-                    <div className="py-16 text-center text-xs text-slate-450 font-bold tracking-wider italic animate-pulse">
+                <div className="min-h-[280px] flex flex-col justify-start relative">
+                  {loading && slots.length === 0 ? (
+                    <div className="flex-1 py-16 flex items-center justify-center text-xs text-slate-450 font-bold tracking-wider italic animate-pulse">
                       🏟️ Fetching available play arena slots...
                     </div>
                   ) : error ? (
-                    <div className="py-16 text-center text-xs text-red-500 font-bold bg-red-50/50 border border-red-100/50 rounded-2xl">
+                    <div className="flex-1 py-16 flex items-center justify-center text-xs text-red-500 font-bold bg-red-50/50 border border-red-100/50 rounded-2xl">
                       ⚠️ {error}
                     </div>
-                  ) : filteredSlots.length === 0 ? (
-                    <div className="py-16 text-center text-xs text-slate-455 font-bold">
+                  ) : filteredSlots.length === 0 && !loading ? (
+                    <div className="flex-1 py-16 flex items-center justify-center text-xs text-slate-455 font-bold">
                       No matches available in the "{selectedCategory}" time slot. Try another category filter.
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
-                      {filteredSlots.map((slot) => {
-                        const isBooked = slot.is_booked;
-                        const isSelected = selectedSlots.some(s => s.id === slot.id);
+                    <div className="relative w-full">
+                      {loading && slots.length > 0 && (
+                        <div className="absolute inset-0 bg-white/40 backdrop-blur-[0.5px] flex items-center justify-center z-20 rounded-3xl">
+                          <div className="flex flex-col items-center space-y-2">
+                            <div className="w-8 h-8 border-4 border-slate-200 border-t-emerald-600 rounded-full animate-spin" />
+                            <span className="text-[10px] text-emerald-700 font-black tracking-widest uppercase animate-pulse">Refreshing Arena...</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className={`grid grid-cols-2 md:grid-cols-3 gap-3.5 transition-all duration-300 ${
+                        loading ? 'opacity-40 blur-[1px] pointer-events-none select-none' : ''
+                      }`}>
+                        {filteredSlots.map((slot) => {
+                          const isBooked = slot.is_booked;
+                          const isSelected = selectedSlots.some(s => s.id === slot.id);
 
-                        return (
-                          <button
-                            key={slot.id}
-                            disabled={isBooked}
-                            onClick={() => handleSlotClick(slot)}
-                            className={`group relative p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col justify-between items-start cursor-pointer min-h-[90px] overflow-hidden ${
-                              isBooked
-                                ? 'bg-slate-50 border-slate-200 text-slate-350 pointer-events-none'
-                                : isSelected
-                                  ? 'bg-emerald-650 border-emerald-600 text-white shadow-brand-glow scale-[1.02]'
-                                  : 'bg-white border-slate-200 hover:border-emerald-500/30 text-pitch-charcoal hover:shadow-premium-soft'
-                            }`}
-                          >
-                            {/* Selection state badge */}
-                            <div className="absolute top-3.5 right-3.5">
-                              {isBooked ? (
-                                <span className="text-[7px] font-black tracking-widest text-slate-400 bg-slate-200/50 px-1.5 py-0.5 rounded uppercase">Locked</span>
-                              ) : isSelected ? (
-                                <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-3xs">
-                                  <Check className="w-2.5 h-2.5 text-emerald-600 stroke-[3.5]" />
-                                </div>
-                              ) : (
-                                <span className="text-[7px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded uppercase">Open</span>
-                              )}
-                            </div>
+                          return (
+                            <button
+                              type="button"
+                              key={slot.id}
+                              disabled={isBooked}
+                              onClick={() => handleSlotClick(slot)}
+                              className={`group relative p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col justify-between items-start cursor-pointer min-h-[90px] overflow-hidden ${
+                                isBooked
+                                  ? 'bg-slate-50 border-slate-200 text-slate-350 pointer-events-none'
+                                  : isSelected
+                                    ? 'bg-emerald-650 border-emerald-600 text-white shadow-brand-glow scale-[1.02]'
+                                    : 'bg-white border-slate-200 hover:border-emerald-500/30 text-pitch-charcoal hover:shadow-premium-soft'
+                              }`}
+                            >
+                              {/* Selection state badge */}
+                              <div className="absolute top-3.5 right-3.5">
+                                {isBooked ? (
+                                  <span className="text-[7px] font-black tracking-widest text-slate-400 bg-slate-200/50 px-1.5 py-0.5 rounded uppercase">Locked</span>
+                                ) : isSelected ? (
+                                  <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-3xs">
+                                    <Check className="w-2.5 h-2.5 text-emerald-600 stroke-[3.5]" />
+                                  </div>
+                                ) : (
+                                  <span className="text-[7px] font-bold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded uppercase">Open</span>
+                                )}
+                              </div>
 
-                            <span className="text-sm sm:text-base font-display font-extrabold tracking-tight mt-1">
-                              {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
-                            </span>
-                            
-                            <div className="w-full flex items-center justify-between text-[9px] font-bold uppercase tracking-wider mt-3">
-                              <span className={isSelected ? 'text-emerald-100' : 'text-slate-400'}>
-                                {slot.category === 'Morning' && '🌅 '}
-                                {slot.category === 'Afternoon' && '☀️ '}
-                                {slot.category === 'Evening' && '🌇 '}
-                                {slot.category === 'Night' && '🌃 '}
-                                {slot.category}
+                              <span className="text-sm sm:text-base font-display font-extrabold tracking-tight mt-1">
+                                {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
                               </span>
-                              <span className={isSelected ? 'text-white' : 'text-slate-655 font-extrabold'}>
-                                ₹{slot.price}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })}
+                              
+                              <div className="w-full flex items-center justify-between text-[9px] font-bold uppercase tracking-wider mt-3">
+                                <span className={isSelected ? 'text-emerald-100' : 'text-slate-400'}>
+                                  {slot.category === 'Morning' && '🌅 '}
+                                  {slot.category === 'Afternoon' && '☀️ '}
+                                  {slot.category === 'Evening' && '🌇 '}
+                                  {slot.category === 'Night' && '🌃 '}
+                                  {slot.category}
+                                </span>
+                                <span className={isSelected ? 'text-white' : 'text-slate-655 font-extrabold'}>
+                                  ₹{slot.price}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>
