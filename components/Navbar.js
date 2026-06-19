@@ -67,7 +67,7 @@ export default function Navbar({ currentView, setView, onNavigateToSection, turf
   const isGreenHeader = true;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-t-4 border-t-emerald-650 border-b-2 border-b-emerald-650 bg-emerald-50/80 backdrop-blur-md py-3 shadow-premium-soft text-pitch-charcoal">
+    <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b bg-emerald-50/80 backdrop-blur-md border-emerald-100/30 py-3 shadow-premium-soft text-pitch-charcoal">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           

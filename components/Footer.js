@@ -21,7 +21,7 @@ export default function Footer({ turfDetails }) {
   const locationText = address.includes("Jeypore") ? "Jeypore, OD" : "Odisha, IN";
 
   return (
-    <footer className="bg-emerald-50/50 text-slate-600 py-12 border-t border-emerald-100/60 font-sans text-left relative overflow-hidden">
+    <footer className="bg-emerald-50/50 text-slate-600 py-12 border-t border-emerald-100/30 font-sans text-left relative overflow-hidden">
       {/* Background glow effects */}
       <div className="absolute top-0 left-1/4 w-72 h-72 bg-emerald-500/3 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-60 h-60 bg-teal-500/3 rounded-full blur-3xl pointer-events-none" />
