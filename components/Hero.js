@@ -37,20 +37,20 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
 
   return (
     <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden border-b border-slate-200/45 font-sans">
-      {/* Split background: Left 58.333% (7 cols) is green, Right 41.667% (5 cols) is white. On smaller screens, top is green, bottom is white. */}
+      {/* Split background: Left 50% is green, Right 50% is white. On smaller screens, top is green, bottom is white. */}
       <div className="absolute inset-0 flex flex-col lg:flex-row pointer-events-none z-0">
-        <div className="w-full lg:w-[58.333%] h-[60%] lg:h-full bg-emerald-600" />
-        <div className="w-full lg:w-[41.667%] h-[40%] lg:h-full bg-white" />
+        <div className="w-full lg:w-1/2 h-[55%] lg:h-full bg-emerald-600" />
+        <div className="w-full lg:w-1/2 h-[45%] lg:h-full bg-white" />
       </div>
 
       {/* Decorative premium background mesh overlay on the green side */}
-      <div className="absolute top-0 left-0 w-full lg:w-[58.333%] h-[60%] lg:h-full blur-[120px] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(5, 150, 105, 0.25) 0%, transparent 70%)' }} />
+      <div className="absolute top-0 left-0 w-full lg:w-1/2 h-[55%] lg:h-full blur-[120px] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(5, 150, 105, 0.25) 0%, transparent 70%)' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           
           <motion.div 
-            className="lg:col-span-7 flex flex-col space-y-6 text-left"
+            className="flex flex-col space-y-6 text-left"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
@@ -140,7 +140,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
 
           {/* Slideshow Image Card */}
           <motion.div 
-            className="lg:col-span-5 relative w-full flex justify-center"
+            className="relative w-full flex justify-center"
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.55, delay: 0.1 }}

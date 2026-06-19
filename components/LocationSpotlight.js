@@ -30,14 +30,14 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
 
   return (
     <section id="location-specs" className="relative py-10 md:py-16 overflow-hidden font-sans text-left border-b border-slate-200/40">
-      {/* Split background: Left 66.667% (8 cols) is green, Right 33.333% (4 cols) is white. On smaller screens, top 72% is green, bottom 28% is white. */}
+      {/* Split background: Left 50% is green, Right 50% is white. On smaller screens, top 65% is green, bottom 35% is white. */}
       <div className="absolute inset-0 flex flex-col lg:flex-row pointer-events-none z-0">
-        <div className="w-full lg:w-[66.667%] h-[72%] lg:h-full bg-emerald-600" />
-        <div className="w-full lg:w-[33.333%] h-[28%] lg:h-full bg-white" />
+        <div className="w-full lg:w-1/2 h-[65%] lg:h-full bg-emerald-600" />
+        <div className="w-full lg:w-1/2 h-[35%] lg:h-full bg-white" />
       </div>
 
       {/* Decorative gradient overlay on green side */}
-      <div className="absolute top-0 left-0 w-full lg:w-[66.667%] h-[72%] lg:h-full blur-[120px] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(5, 150, 105, 0.25) 0%, transparent 70%)' }} />
+      <div className="absolute top-0 left-0 w-full lg:w-1/2 h-[65%] lg:h-full blur-[120px] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(5, 150, 105, 0.25) 0%, transparent 70%)' }} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
@@ -74,10 +74,10 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
         </div>
 
         {/* 2-Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           
           {/* Left Column: Image Slider */}
-          <div className="lg:col-span-8 space-y-4">
+          <div className="space-y-4">
             <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full rounded-2xl bg-slate-900 border border-white/10 overflow-hidden shadow-premium-tall group">
               
               <AnimatePresence mode="wait">
@@ -153,7 +153,7 @@ export default function LocationSpotlight({ onBookClick, turfDetails }) {
           </div>
 
           {/* Right Column: Sticky Sidebar Actions */}
-          <div className="lg:col-span-4 flex flex-col space-y-4">
+          <div className="flex flex-col space-y-4">
             
             {/* TIMING details box */}
             <div className="border border-slate-200/60 hover:border-emerald-500/25 rounded-2xl p-5 bg-white/70 backdrop-blur-md text-left space-y-2 transition-all duration-300 shadow-premium-soft hover:shadow-brand-glow">

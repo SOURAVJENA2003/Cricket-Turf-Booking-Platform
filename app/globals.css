@@ -14,9 +14,22 @@
   --color-pitch-slate-800: #1e293b;
   --color-pitch-charcoal: #0f172a;
   
-  --color-brand-green: #10b981;
-  --color-brand-green-hover: #059669;
-  --color-brand-green-light: #ecfdf5;
+  --color-brand-green: #0b573a;
+  --color-brand-green-hover: #083e29;
+  --color-brand-green-light: #eef9f4;
+  
+  --color-emerald-50: #eefaf4;
+  --color-emerald-100: #d5f2e5;
+  --color-emerald-200: #a2e2c4;
+  --color-emerald-250: #86d9b1;
+  --color-emerald-300: #6fcba0;
+  --color-emerald-400: #3caf7c;
+  --color-emerald-500: #148f5e;
+  --color-emerald-600: #0b573a;
+  --color-emerald-650: #0a4c33;
+  --color-emerald-700: #083e29;
+  --color-emerald-800: #052a1c;
+  --color-emerald-900: #02140d;
   
   --shadow-premium-soft: 0 8px 30px -5px rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.02);
   --shadow-premium-tall: 0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 8px 20px -6px rgba(15, 23, 42, 0.04);
