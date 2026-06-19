@@ -34,6 +34,36 @@ async function initDb() {
     // Now connect to the new database and create tables
     console.log('Creating tables...');
     await query(`
+      CREATE TABLE IF NOT EXISTS settings (
+        id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+        turf_name VARCHAR(255) NOT NULL DEFAULT 'Runmakers Arena Box Cricket',
+        turf_address TEXT NOT NULL DEFAULT 'Infront of Omfed Plant, Railway Station Rd, Chowk, Bankobija, Jeypore, Odisha 764002',
+        turf_google_maps TEXT NOT NULL DEFAULT 'https://www.google.com/maps/place/Runmakers+Arena+Box+Cricket/data=!4m2!3m1!1s0x0:0x453d498e3c55270?sa=X&ved=1t:2428&hl=en-IN&ictx=111',
+        turf_phone VARCHAR(50) NOT NULL DEFAULT 'N/A',
+        turf_email VARCHAR(255) NOT NULL DEFAULT 'contact@runmakers.com',
+        opening_time VARCHAR(5) NOT NULL DEFAULT '06:00',
+        closing_time VARCHAR(5) NOT NULL DEFAULT '23:00',
+        default_slot_price DECIMAL(10, 2) NOT NULL DEFAULT 1000.00,
+        upi_id VARCHAR(255) NOT NULL DEFAULT 'owner@upi',
+        upi_name VARCHAR(255) NOT NULL DEFAULT 'Turf Owner',
+        payment_mode VARCHAR(20) NOT NULL DEFAULT 'upi',
+        booking_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+        turf_description TEXT,
+        turf_logo_url VARCHAR(500),
+        turf_banner_url VARCHAR(500),
+        whatsapp_number VARCHAR(20),
+        instagram_url VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    // Bootstrap default setting row if it doesn't exist
+    await query(`
+      INSERT INTO settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
+    `);
+
+    await query(`
       CREATE TABLE IF NOT EXISTS slots (
         id SERIAL PRIMARY KEY,
         date DATE NOT NULL,

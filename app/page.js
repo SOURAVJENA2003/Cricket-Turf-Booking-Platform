@@ -18,6 +18,7 @@ export default function Home() {
   const [error, setError] = useState('');
   const [completedBookingId, setCompletedBookingId] = useState(null); // Replaces successMessage
   const [turfDetails, setTurfDetails] = useState(null);
+  const [bookingEnabled, setBookingEnabled] = useState(true);
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -28,6 +29,7 @@ export default function Home() {
         const data = await response.json();
         if (data.success && data.data.turfDetails) {
           setTurfDetails(data.data.turfDetails);
+          setBookingEnabled(data.data.bookingEnabled !== false);
         }
       } catch (err) {
         console.error('Failed to load turf config:', err);
@@ -77,6 +79,7 @@ export default function Home() {
   };
 
   const handleSelectSlot = (slot) => {
+    if (!bookingEnabled) return;
     const isAlreadySelected = selectedSlots.some(s => s.id === slot.id);
     
     if (isAlreadySelected) {
@@ -137,6 +140,12 @@ export default function Home() {
       <section className={styles.bookingSection}>
         <DatePicker selectedDate={selectedDate} onDateChange={handleDateChange} />
         
+        {!bookingEnabled && (
+          <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '15px', borderRadius: '6px', margin: '20px 0', fontWeight: 'bold', textAlign: 'center' }}>
+            ⚠️ Public bookings are temporarily disabled by the administrator. You can view slots but checkout is locked.
+          </div>
+        )}
+
         {error && <div className={styles.error}>{error}</div>}
 
         {selectedSlots.length > 0 && (
@@ -148,7 +157,16 @@ export default function Home() {
             </div>
             <div className={styles.cartActions}>
               <button onClick={() => setSelectedSlots([])} className={styles.clearBtn}>Clear</button>
-              <button onClick={() => setIsModalOpen(true)} className={styles.bookBtn}>Book Now</button>
+              <button 
+                onClick={() => {
+                  if (bookingEnabled) setIsModalOpen(true);
+                }} 
+                className={styles.bookBtn}
+                disabled={!bookingEnabled}
+                style={!bookingEnabled ? { backgroundColor: '#ccc', cursor: 'not-allowed' } : {}}
+              >
+                {bookingEnabled ? 'Book Now' : 'Bookings Disabled'}
+              </button>
             </div>
           </div>
         )}

@@ -1,27 +1,43 @@
 import { NextResponse } from 'next/server';
+import db from '@/lib/db';
+const { query } = db;
 
 export async function GET() {
   try {
-    const paymentMode = process.env.PAYMENT_MODE || 'upi';
+    const result = await query('SELECT * FROM settings WHERE id = 1');
+    if (result.rows.length === 0) {
+      throw new Error('Database settings not initialized.');
+    }
+    const s = result.rows[0];
+    const paymentMode = s.payment_mode || 'upi';
+
     const configData = {
       paymentMode,
+      bookingEnabled: s.booking_enabled,
       turfDetails: {
-        name: process.env.TURF_NAME,
-        address: process.env.TURF_ADDRESS,
-        googleMaps: process.env.TURF_GOOGLE_MAPS,
-        openTime: process.env.TURF_OPEN_TIME,
-        closeTime: process.env.TURF_CLOSE_TIME,
+        name: s.turf_name,
+        address: s.turf_address,
+        googleMaps: s.turf_google_maps,
+        phone: s.turf_phone,
+        email: s.turf_email,
+        openTime: s.opening_time,
+        closeTime: s.closing_time,
+        description: s.turf_description || '',
+        logoUrl: s.turf_logo_url || '',
+        bannerUrl: s.turf_banner_url || '',
+        whatsappNumber: s.whatsapp_number || '',
+        instagramUrl: s.instagram_url || '',
       }
     };
 
     if (paymentMode === 'upi') {
       configData.upiDetails = {
-        id: process.env.UPI_ID,
-        name: process.env.UPI_NAME,
+        id: s.upi_id,
+        name: s.upi_name,
       };
       // Maintain top-level compatibility for existing UPI selectors
-      configData.id = process.env.UPI_ID;
-      configData.name = process.env.UPI_NAME;
+      configData.id = s.upi_id;
+      configData.name = s.upi_name;
     } else if (paymentMode === 'razorpay') {
       configData.razorpayKeyId = process.env.RAZORPAY_KEY_ID;
     }
