@@ -22,7 +22,11 @@ export async function PATCH(request) {
       return NextResponse.json({ error: 'Slot ID and Status are required' }, { status: 400 });
     }
 
-    await query('UPDATE bookings SET status = $1 WHERE slot_id = $2', [status, slotId]);
+    // Only update pending active bookings for that slot
+    await query(
+      "UPDATE bookings SET status = $1 WHERE slot_id = $2 AND status = 'pending'",
+      [status, slotId]
+    );
 
     return NextResponse.json({ message: `Booking status updated to ${status}` });
   } catch (error) {
@@ -45,19 +49,34 @@ export async function POST(request) {
 
     await query('BEGIN');
 
-    const slotCheck = await query('SELECT is_booked FROM slots WHERE id = $1', [slotId]);
+    // Check if slot exists and is not already booked (deriving dynamically)
+    const slotCheck = await query(
+      `SELECT id, 
+              EXISTS (
+                SELECT 1 FROM bookings 
+                WHERE slot_id = $1 AND status IN ('pending', 'confirmed')
+              ) AS is_booked
+       FROM slots WHERE id = $1`,
+      [slotId]
+    );
+
     if (slotCheck.rows.length === 0) {
       await query('ROLLBACK');
       return NextResponse.json({ error: 'Slot not found' }, { status: 404 });
     }
 
-    // Admin can override or just mark as booked
-    await query(
-      'INSERT INTO bookings (slot_id, customer_name, phone) VALUES ($1, $2, $3) ON CONFLICT (slot_id) DO NOTHING',
-      [slotId, 'Admin (Offline)', 'N/A']
-    );
+    if (slotCheck.rows[0].is_booked) {
+      await query('ROLLBACK');
+      return NextResponse.json({ error: 'Slot is already booked or pending' }, { status: 400 });
+    }
 
-    await query('UPDATE slots SET is_booked = TRUE WHERE id = $1', [slotId]);
+    // Admin marks slot as booked (defaults to 'confirmed' status for offline block)
+    await query(
+      `INSERT INTO bookings (slot_id, customer_name, phone, status) 
+       VALUES ($1, $2, $3, $4) 
+       ON CONFLICT (slot_id) WHERE status IN ('pending', 'confirmed') DO NOTHING`,
+      [slotId, 'Admin (Offline)', 'N/A', 'confirmed']
+    );
 
     await query('COMMIT');
 
@@ -84,8 +103,13 @@ export async function DELETE(request) {
 
     await query('BEGIN');
 
-    await query('DELETE FROM bookings WHERE slot_id = $1', [slotId]);
-    await query('UPDATE slots SET is_booked = FALSE WHERE id = $1', [slotId]);
+    // Admin soft-cancels the slot by changing status to 'cancelled'
+    await query(
+      `UPDATE bookings 
+       SET status = 'cancelled' 
+       WHERE slot_id = $1 AND status IN ('pending', 'confirmed')`,
+      [slotId]
+    );
 
     await query('COMMIT');
 

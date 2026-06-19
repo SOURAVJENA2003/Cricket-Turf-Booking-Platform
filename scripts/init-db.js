@@ -40,7 +40,6 @@ async function initDb() {
         start_time VARCHAR(5) NOT NULL,
         end_time VARCHAR(5) NOT NULL,
         price DECIMAL(10, 2) NOT NULL,
-        is_booked BOOLEAN DEFAULT FALSE,
         UNIQUE(date, start_time)
       );
     `);
@@ -48,7 +47,7 @@ async function initDb() {
     await query(`
       CREATE TABLE IF NOT EXISTS bookings (
         id SERIAL PRIMARY KEY,
-        slot_id INTEGER UNIQUE REFERENCES slots(id) ON DELETE CASCADE,
+        slot_id INTEGER REFERENCES slots(id) ON DELETE CASCADE,
         customer_name VARCHAR(255),
         phone VARCHAR(20),
         booking_group_id VARCHAR(50),
@@ -58,7 +57,45 @@ async function initDb() {
       );
     `);
 
-    console.log('Tables created successfully.');
+    // Create partial unique index to allow only one active booking per slot
+    await query(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_active_bookings_per_slot 
+      ON bookings (slot_id) 
+      WHERE status IN ('pending', 'confirmed');
+    `);
+
+    // Create trigger function to enforce duplicate UTR check across different booking groups
+    await query(`
+      CREATE OR REPLACE FUNCTION check_duplicate_utr()
+      RETURNS TRIGGER AS $$
+      BEGIN
+        IF NEW.transaction_id IS NOT NULL AND NEW.transaction_id != '' AND NEW.customer_name != 'Admin (Offline)' THEN
+          IF EXISTS (
+            SELECT 1 FROM bookings 
+            WHERE transaction_id = NEW.transaction_id 
+              AND booking_group_id IS DISTINCT FROM NEW.booking_group_id
+          ) THEN
+            RAISE EXCEPTION 'Duplicate UTR submission: UTR % has already been used in another booking group', NEW.transaction_id;
+          END IF;
+        END IF;
+        RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
+    `);
+
+    // Create trigger
+    await query(`
+      DROP TRIGGER IF EXISTS enforce_unique_utr ON bookings;
+    `);
+
+    await query(`
+      CREATE TRIGGER enforce_unique_utr
+      BEFORE INSERT OR UPDATE ON bookings
+      FOR EACH ROW
+      EXECUTE FUNCTION check_duplicate_utr();
+    `);
+
+    console.log('Tables and triggers created successfully.');
   } catch (err) {
     console.error('Error during database initialization:', err);
     if (client) await client.end();
