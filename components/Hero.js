@@ -37,14 +37,55 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
 
   return (
     <section className="relative pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden border-b border-slate-200/45 font-sans">
-      {/* Split background: Left 50% is white, Right 50% is green. On smaller screens, top is white, bottom is green. */}
-      <div className="absolute inset-0 flex flex-col lg:flex-row pointer-events-none z-0">
+      {/* Background panels: Left 50% is solid white, Right 50% is the full-screen image slideshow. On smaller screens, top is white, bottom is slideshow. */}
+      <div className="absolute inset-0 flex flex-col lg:flex-row z-0">
         <div className="w-full lg:w-1/2 h-[55%] lg:h-full bg-white" />
-        <div className="w-full lg:w-1/2 h-[45%] lg:h-full bg-emerald-600" />
-      </div>
+        
+        {/* Slideshow directly in the right side */}
+        <div className="relative w-full lg:w-1/2 h-[340px] sm:h-[420px] lg:h-full overflow-hidden bg-emerald-950">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={photoIndex}
+              initial={{ opacity: 0.75 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0.75 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <img 
+                src={slideImages[photoIndex].url}
+                alt={slideImages[photoIndex].caption}
+                className="w-full h-full object-cover select-none"
+              />
+            </motion.div>
+          </AnimatePresence>
 
-      {/* Decorative premium background mesh overlay on the green side */}
-      <div className="absolute top-0 right-0 w-full lg:w-1/2 h-[45%] lg:h-full blur-[120px] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(5, 150, 105, 0.2) 0%, transparent 70%)' }} />
+          {/* Vignette overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-pitch-charcoal/80 via-transparent to-pitch-charcoal/15 pointer-events-none" />
+
+          {/* Minimalist slideshow details overlaid directly on full screen */}
+          <div className="absolute inset-x-0 bottom-0 p-8 sm:p-12 text-white text-left z-10">
+            <span className="text-[10px] sm:text-xs uppercase font-black tracking-widest text-emerald-300">
+              {name.split(" ")[0]} Arena Live View
+            </span>
+            <h3 className="text-base sm:text-lg font-display font-black tracking-tight mt-1 leading-tight max-w-md">
+              {slideImages[photoIndex].caption}
+            </h3>
+            
+            {/* Visual Indicators */}
+            <div className="flex gap-1.5 mt-4">
+              {slideImages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setPhotoIndex(idx)}
+                  className={`h-1.5 rounded-full transition-all cursor-pointer ${idx === photoIndex ? 'w-8 bg-emerald-500' : 'w-2.5 bg-white/40'}`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -72,7 +113,7 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
             </h1>
 
             {/* Clean narrative */}
-            <p className="text-sm sm:text-base text-pitch-slate-650 font-normal max-w-xl leading-relaxed">
+            <p className="text-sm sm:text-base text-pitch-slate-655 font-normal max-w-xl leading-relaxed">
               {tagline}
             </p>
 
@@ -138,57 +179,8 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
             </div>
           </motion.div>
 
-          {/* Slideshow Image Card */}
-          <motion.div 
-            className="relative w-full flex justify-center"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.55, delay: 0.1 }}
-          >
-            <div className="relative w-full max-w-[430px] aspect-[4/5] rounded-3xl bg-slate-100 border border-white/10 hover:border-white/20 shadow-premium-tall hover:shadow-[0_20px_50px_rgba(255,255,255,0.08)] overflow-hidden transition-all duration-300 group">
-              
-              {/* Slideshow image switcher wrapper */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={photoIndex}
-                  initial={{ opacity: 0, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, filter: "blur(4px)" }}
-                  transition={{ duration: 0.4 }}
-                  className="absolute inset-0 w-full h-full"
-                >
-                  <img 
-                    src={slideImages[photoIndex].url}
-                    alt={slideImages[photoIndex].caption}
-                    className="w-full h-full object-cover select-none"
-                  />
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Minimalist overlay */}
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-pitch-charcoal/90 via-pitch-charcoal/30 to-transparent p-6 text-white text-left">
-                <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">
-                  {name.split(" ")[0]} Live View
-                </span>
-                <h3 className="text-base font-extrabold tracking-tight mt-1 leading-tight">
-                  {slideImages[photoIndex].caption}
-                </h3>
-                
-                {/* Visual Indicators */}
-                <div className="flex gap-1.5 mt-4">
-                  {slideImages.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setPhotoIndex(idx)}
-                      className={`h-1 rounded-full transition-all cursor-pointer ${idx === photoIndex ? 'w-6 bg-emerald-500' : 'w-2 bg-white/40'}`}
-                      aria-label={`Go to slide ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-            </div>
-          </motion.div>
+          {/* Empty column placeholder to maintain grid alignment on large screens */}
+          <div className="hidden lg:block h-full pointer-events-none" />
 
         </div>
       </div>
