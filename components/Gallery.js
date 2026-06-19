@@ -16,63 +16,63 @@ export default function Gallery({ turfDetails }) {
       category: 'turf',
       title: "Cushioned AstroTurf Match Pitch",
       description: "Our high-density synthetic grass matting is double-cushioned to guard players against knee shocks and support true ball bounds.",
-      url: "https://images.unsplash.com/photo-1540747737956-37872404459a?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_1.jpg"
     },
     {
       id: 'img-2',
       category: 'action',
       title: "Stadium Sunset Atmosphere",
       description: `Beautiful evening setting at ${name} showing premium high-mast floodlight beams ready for late-night corporate matches.`,
-      url: "https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_2.jpg"
     },
     {
       id: 'img-3',
       category: 'gear',
       title: "Grade-1 English Wood Kits",
       description: "Our rental locker includes top-of-the-line bats, genuine professional leather balls, and full premium protection pads.",
-      url: "https://images.unsplash.com/photo-1624526261182-ab3dfc01a2c3?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_3.jpg"
     },
     {
       id: 'img-4',
       category: 'action',
       title: "Perfect Net Enclosure Focus",
       description: "Secure, massive steel nets enclosing the entire 120ft field to keep high fly shots within limits while maintaining excellent outside visibility.",
-      url: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_4.jpg"
     },
     {
       id: 'img-5',
       category: 'turf',
       title: "Zero-Shadow Night Floodlights",
       description: "Equipped with professional LED floodlight arrays to eliminate shadows during critical spin matches and ball releases.",
-      url: "https://images.unsplash.com/photo-1593787406536-3676a152d9cb?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_5.jpg"
     },
     {
       id: 'img-6',
       category: 'action',
       title: "Dynamic Target Training Nets",
       description: "Specialized side nets and bowling machines designed for batting drills, batting angle training, and solo team practices.",
-      url: "https://images.unsplash.com/photo-1510563800743-aed236490d08?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_6.jpg"
     },
     {
       id: 'img-7',
       category: 'gear',
       title: "Heavy Tennis & Leather Tournaments",
       description: "Ready for customized formats. We support both high-impact corporate tennis balls and classic leather cricket matches.",
-      url: "https://images.unsplash.com/photo-1562088287-bde35a1ea917?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_7.jpg"
     },
     {
       id: 'img-8',
       category: 'action',
       title: "Team Dugouts & Refreshments",
       description: "Spacious under-canopy seating space for team members to strategize, monitor live scorecards, and rest in style.",
-      url: "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_8.jpg"
     },
     {
       id: 'img-9',
       category: 'turf',
       title: "Overhead Canopy Rain Cover",
       description: "Our retractable all-weather sheet keeps the arena active during monsoons, facilitating true rain-or-shine cricket sessions.",
-      url: "https://images.unsplash.com/photo-1594470117754-e3475ad7d2a5?auto=format&fit=crop&q=80&w=800"
+      url: "/gallery_9.jpg"
     }
   ];
 
