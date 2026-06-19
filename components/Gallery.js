@@ -1,12 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Camera, Eye, X, ZoomIn, Info } from 'lucide-react';
 
 export default function Gallery({ turfDetails }) {
   const [filter, setFilter] = useState('all');
   const [selectedItem, setSelectedItem] = useState(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (selectedItem) {
@@ -154,59 +160,62 @@ export default function Gallery({ turfDetails }) {
         </motion.div>
 
         {/* Modal Overlay for Expanded Details */}
-        <AnimatePresence>
-          {selectedItem && (
-            <div 
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pitch-charcoal/80 backdrop-blur-sm transition-opacity duration-300"
-              onClick={() => setSelectedItem(null)}
-            >
-              <motion.div 
-                initial={{ scale: 0.96, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.96, opacity: 0 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
-                className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden border border-slate-200/80 shadow-2xl relative"
-                onClick={(e) => e.stopPropagation()}
+        {mounted && typeof document !== 'undefined' ? createPortal(
+          <AnimatePresence>
+            {selectedItem && (
+              <div 
+                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-pitch-charcoal/80 backdrop-blur-sm transition-opacity duration-300"
+                onClick={() => setSelectedItem(null)}
               >
-                <button 
-                  onClick={() => setSelectedItem(null)}
-                  className="absolute top-4 right-4 z-10 w-9 h-9 rounded-xl bg-black/60 hover:bg-black/85 text-white flex items-center justify-center transition-all cursor-pointer shadow-md hover:rotate-90 duration-200"
-                  title="Close Modal"
+                <motion.div 
+                  initial={{ scale: 0.96, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.96, opacity: 0 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  className="bg-white rounded-3xl max-w-3xl w-full overflow-hidden border border-slate-200/80 shadow-2xl relative"
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  <X className="w-5 h-5" />
-                </button>
+                  <button 
+                    onClick={() => setSelectedItem(null)}
+                    className="absolute top-4 right-4 z-10 w-9 h-9 rounded-xl bg-black/60 hover:bg-black/85 text-white flex items-center justify-center transition-all cursor-pointer shadow-md hover:rotate-90 duration-200"
+                    title="Close Modal"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
 
-                <div className="grid grid-cols-1 md:grid-cols-12">
-                  <div className="md:col-span-7 h-[280px] md:h-[420px] bg-slate-900 relative">
-                    <img 
-                      src={selectedItem.url} 
-                      alt={selectedItem.title} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-5 p-6 flex flex-col justify-between text-left bg-slate-50/50">
-                    <div>
-                      <span className="text-[8px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded-lg inline-block mb-3">
-                        {selectedItem.category === 'action' ? 'Match Action' : selectedItem.category === 'turf' ? 'Infields' : 'Equipment'}
-                      </span>
-                      <h3 className="text-lg font-display font-black text-pitch-charcoal leading-tight">
-                        {selectedItem.title}
-                      </h3>
-                      <p className="text-xs text-pitch-slate-500 font-sans mt-4 leading-relaxed font-medium">
-                        {selectedItem.description}
-                      </p>
+                  <div className="grid grid-cols-1 md:grid-cols-12">
+                    <div className="md:col-span-7 h-[280px] md:h-[420px] bg-slate-900 relative">
+                      <img 
+                        src={selectedItem.url} 
+                        alt={selectedItem.title} 
+                        className="w-full h-full object-cover"
+                      />
                     </div>
+                    
+                    <div className="md:col-span-5 p-6 flex flex-col justify-between text-left bg-slate-50/50">
+                      <div>
+                        <span className="text-[8px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-50 border border-emerald-150 px-2 py-0.5 rounded-lg inline-block mb-3">
+                          {selectedItem.category === 'action' ? 'Match Action' : selectedItem.category === 'turf' ? 'Infields' : 'Equipment'}
+                        </span>
+                        <h3 className="text-lg font-display font-black text-pitch-charcoal leading-tight">
+                          {selectedItem.title}
+                        </h3>
+                        <p className="text-xs text-pitch-slate-500 font-sans mt-4 leading-relaxed font-medium">
+                          {selectedItem.description}
+                        </p>
+                      </div>
 
-                    <div className="pt-5 mt-5 border-t border-slate-200/60 flex items-center gap-2 text-[9px] text-pitch-slate-400 font-bold uppercase tracking-wider">
-                      <Info className="w-3.5 h-3.5 text-emerald-600" /> Professional Grade Verified
+                      <div className="pt-5 mt-5 border-t border-slate-200/60 flex items-center gap-2 text-[9px] text-pitch-slate-400 font-bold uppercase tracking-wider">
+                        <Info className="w-3.5 h-3.5 text-emerald-600" /> Professional Grade Verified
+                      </div>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>,
+          document.body
+        ) : null}
 
       </div>
     </section>
