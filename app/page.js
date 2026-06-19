@@ -1,65 +1,143 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import DatePicker from '@/components/DatePicker';
+import SlotGrid from '@/components/SlotGrid';
+import BookingModal from '@/components/BookingModal';
+import SuccessModal from '@/components/SuccessModal';
+import styles from './page.module.css';
 
 export default function Home() {
+  const [selectedDate, setSelectedDate] = useState(new Date().toLocaleDateString('en-CA'));
+  const [slots, setSlots] = useState([]);
+  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [completedBookingId, setCompletedBookingId] = useState(null); // Replaces successMessage
+
+  useEffect(() => {
+    fetchSlots();
+    setSelectedSlots([]); // Clear selection when date changes
+  }, [selectedDate]);
+
+  const fetchSlots = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch(`/api/slots?date=${selectedDate}`);
+      const data = await response.json();
+      if (response.ok) {
+        setSlots(data);
+        if (data.length === 0) {
+          setError('No slots found for this date. Please ensure the database is seeded.');
+        }
+      } else {
+        setError(data.error || 'Failed to fetch slots');
+      }
+    } catch (error) {
+      setError('Connection error: Could not reach the server.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectSlot = (slot) => {
+    const isAlreadySelected = selectedSlots.some(s => s.id === slot.id);
+    
+    if (isAlreadySelected) {
+      // Allow deselecting only the ends of the selection to maintain consecutiveness
+      // For simplicity, we'll allow deselecting any, but we'll re-validate or just clear
+      setSelectedSlots(selectedSlots.filter(s => s.id !== slot.id));
+      return;
+    }
+
+    if (selectedSlots.length === 0) {
+      setSelectedSlots([slot]);
+      return;
+    }
+
+    // Check if consecutive
+    const sortedSelected = [...selectedSlots, slot].sort((a, b) => a.start_time.localeCompare(b.start_time));
+    let isConsecutive = true;
+    for (let i = 0; i < sortedSelected.length - 1; i++) {
+      if (sortedSelected[i].end_time !== sortedSelected[i+1].start_time) {
+        isConsecutive = false;
+        break;
+      }
+    }
+
+    if (isConsecutive) {
+      setSelectedSlots(sortedSelected);
+    } else {
+      // If not consecutive, start a new selection with just this slot
+      setSelectedSlots([slot]);
+    }
+  };
+
+  const handleBookingSuccess = (bookingGroupId) => {
+    setIsModalOpen(false);
+    setSelectedSlots([]);
+    setCompletedBookingId(bookingGroupId); // Trigger the success modal
+    fetchSlots();
+  };
+
+  const handleCloseSuccessModal = () => {
+    setCompletedBookingId(null);
+  };
+
+  const totalPrice = selectedSlots.reduce((sum, slot) => sum + parseFloat(slot.price), 0);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className={styles.main}>
+      <header className={styles.header}>
+        <h1>Cricket Turf Booking</h1>
+        <nav className={styles.nav}>
+          <a href="/cancel" className={styles.navLink}>Cancel Booking</a>
+          <a href="/admin/login" className={styles.navLink}>Admin Login</a>
+        </nav>
+      </header>
+
+      <section className={styles.bookingSection}>
+        <DatePicker selectedDate={selectedDate} onDateChange={setSelectedDate} />
+        
+        {error && <div className={styles.error}>{error}</div>}
+
+        {selectedSlots.length > 0 && (
+          <div className={styles.cartSummary}>
+            <div className={styles.cartInfo}>
+              <strong>{selectedSlots.length} Slots Selected:</strong>
+              <span> {selectedSlots[0].start_time} - {selectedSlots[selectedSlots.length - 1].end_time}</span>
+              <span className={styles.cartPrice}>Total: ₹{totalPrice}</span>
+            </div>
+            <div className={styles.cartActions}>
+              <button onClick={() => setSelectedSlots([])} className={styles.clearBtn}>Clear</button>
+              <button onClick={() => setIsModalOpen(true)} className={styles.bookBtn}>Book Now</button>
+            </div>
+          </div>
+        )}
+
+        {loading ? (
+          <p className={styles.loading}>Loading slots...</p>
+        ) : (
+          !error && <SlotGrid slots={slots} selectedSlots={selectedSlots} onSelectSlot={handleSelectSlot} />
+        )}
+      </section>
+
+      {isModalOpen && (
+        <BookingModal 
+          slots={selectedSlots} 
+          onClose={() => setIsModalOpen(false)} 
+          onBookingSuccess={handleBookingSuccess}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      )}
+
+      {completedBookingId && (
+        <SuccessModal 
+          bookingId={completedBookingId}
+          onClose={handleCloseSuccessModal}
+        />
+      )}
+    </main>
   );
 }
