@@ -9,6 +9,8 @@
     "lint": "eslint",
     "db:init": "node scripts/init-db.js",
     "db:seed": "node scripts/seed.js",
+    "db:update": "node scripts/update-db.js",
+    "db:update-upi": "node scripts/update-db-upi.js",
     "db:update-prices": "node scripts/update-prices.js"
   },
   "dependencies": {

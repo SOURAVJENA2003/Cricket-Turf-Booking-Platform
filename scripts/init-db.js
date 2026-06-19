@@ -7,9 +7,11 @@ async function initDb() {
   const connectionString = process.env.DATABASE_URL;
   const dbName = connectionString.split('/').pop().split('?')[0];
   const baseUrl = connectionString.substring(0, connectionString.lastIndexOf('/'));
+  const useSsl = /neon\.tech/i.test(connectionString);
   
   const client = new Client({
     connectionString: `${baseUrl}/postgres`,
+    ...(useSsl ? { ssl: { rejectUnauthorized: false } } : {}),
   });
 
   try {
@@ -49,6 +51,9 @@ async function initDb() {
         slot_id INTEGER UNIQUE REFERENCES slots(id) ON DELETE CASCADE,
         customer_name VARCHAR(255),
         phone VARCHAR(20),
+        booking_group_id VARCHAR(50),
+        transaction_id VARCHAR(50),
+        status VARCHAR(20) DEFAULT 'pending',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
