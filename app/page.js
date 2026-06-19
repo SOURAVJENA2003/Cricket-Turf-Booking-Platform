@@ -130,7 +130,7 @@ export default function Home() {
       </div>
 
       {/* Dynamic branding footer */}
-      <Footer turfDetails={turfDetails} />
+      {view === 'landing' && <Footer turfDetails={turfDetails} />}
     </div>
   );
 }
