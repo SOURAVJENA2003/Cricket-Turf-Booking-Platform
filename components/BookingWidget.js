@@ -24,26 +24,36 @@ import { motion, AnimatePresence } from 'motion/react';
 import { formatLocalDateString } from '@/lib/date-utils';
 
 export default function BookingWidget({ onBackToHome }) {
-  // Calendar Dates: 5 days starting today
+  // Calendar Dates: 30 days starting today
   const calendarDates = useMemo(() => {
     const dates = [];
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     
-    for (let i = 0; i < 5; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() + i);
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+
+    const now = Date.now();
+    for (let i = 0; i < 30; i++) {
+      const timeInIst = now + i * 24 * 60 * 60 * 1000;
+      const d = new Date(timeInIst);
+      const isoString = formatter.format(d);
       
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      const isoString = `${year}-${month}-${day}`;
+      const [yearStr, monthStr, dayStr] = isoString.split('-');
+      const parsedDayNum = parseInt(dayStr, 10);
+      const parsedMonthIdx = parseInt(monthStr, 10) - 1;
+      
+      const tempDate = new Date(parseInt(yearStr, 10), parsedMonthIdx, parsedDayNum);
 
       dates.push({
         isoString,
-        dayOfWeek: daysOfWeek[d.getDay()],
-        dayNum: d.getDate(),
-        month: months[d.getMonth()]
+        dayOfWeek: daysOfWeek[tempDate.getDay()],
+        dayNum: parsedDayNum,
+        month: months[parsedMonthIdx]
       });
     }
     return dates;
@@ -614,7 +624,7 @@ export default function BookingWidget({ onBackToHome }) {
                     <h3 className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Select Play Date</h3>
                     <p className="text-xs text-slate-500 mt-0.5 font-medium">Pick a day to view available bookings.</p>
                   </div>
-                  <span className="text-[8px] bg-emerald-50 border border-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg font-black uppercase">5 Days Open</span>
+                  <span className="text-[8px] bg-emerald-50 border border-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg font-black uppercase">30 Days Open</span>
                 </div>
                 
                 <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none snap-x">
