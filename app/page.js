@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
-import Stats from '@/components/Stats';
 import BookingWidget from '@/components/BookingWidget';
 import FinalCTA from '@/components/FinalCTA';
 import Footer from '@/components/Footer';
@@ -110,9 +109,6 @@ export default function Home() {
                 onBookClick={() => changeView('booking')} 
                 turfDetails={turfDetails}
               />
-
-              {/* Arena stats */}
-              <Stats turfDetails={turfDetails} />
 
               {/* Image galleries */}
               <Gallery turfDetails={turfDetails} />

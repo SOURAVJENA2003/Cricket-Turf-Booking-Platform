@@ -44,21 +44,12 @@ export default function Hero({ onBookClick, onExploreClick, turfDetails }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           
-          {/* Hero left text panel */}
           <motion.div 
             className="lg:col-span-7 flex flex-col space-y-6 text-left"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: "easeOut" }}
           >
-            {/* Supreme badges */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center space-x-1.5 py-1 px-3 rounded-full bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-900 shadow-xs">
-                <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                <span>5.0 Star Rated Spot</span>
-              </div>
-            </div>
-
             {/* Premium display headings */}
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-display font-extrabold text-pitch-charcoal tracking-tight leading-[1.12]">
               Hit Runs in Style at <br />
