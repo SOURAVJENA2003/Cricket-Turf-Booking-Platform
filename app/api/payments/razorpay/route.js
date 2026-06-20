@@ -3,7 +3,6 @@ import db from '@/lib/db';
 const { query } = db;
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
-import { formatLocalDateString } from '@/lib/date-utils';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID || '',
@@ -121,7 +120,7 @@ export async function POST(request) {
       // Start transaction
       await query('BEGIN');
 
-      // 6. Check slot existence, double booking and past booking check
+      // 6. Check slot existence and double booking
       const placeholders = slotIds.map((_, i) => `$${i + 1}`).join(',');
       const slotCheck = await query(
         `SELECT s.id, s.date, s.start_time,
@@ -139,22 +138,10 @@ export async function POST(request) {
         return NextResponse.json({ success: false, message: 'Some slots were not found in the database.' }, { status: 404 });
       }
 
-      const now = new Date();
       for (const slot of slotCheck.rows) {
         if (slot.is_booked) {
           await query('ROLLBACK');
           return NextResponse.json({ success: false, message: `Slot starting at ${slot.start_time} is already booked.` }, { status: 400 });
-        }
-
-        const cleanDateStr = typeof slot.date === 'string' 
-          ? slot.date.split('T')[0] 
-          : slot.date.toISOString().split('T')[0];
-        const slotIsoStr = `${cleanDateStr}T${slot.start_time}:00+05:30`;
-        const slotDateTime = new Date(slotIsoStr);
-
-        if (slotDateTime < now) {
-          await query('ROLLBACK');
-          return NextResponse.json({ success: false, message: `Cannot book slots in the past (Slot: ${slot.start_time} on ${formatLocalDateString(slot.date)}).` }, { status: 400 });
         }
       }
 

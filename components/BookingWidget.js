@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { 
+import {
   Calendar as CalendarIcon, 
   MapPin, 
   Clock, 
@@ -24,6 +24,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { formatLocalDateString } from '@/lib/date-utils';
 
 export default function BookingWidget({ onBackToHome }) {
+  const [calendarSeed] = useState(() => Date.now());
+
   // Calendar Dates: 30 days starting today
   const calendarDates = useMemo(() => {
     const dates = [];
@@ -37,7 +39,7 @@ export default function BookingWidget({ onBackToHome }) {
       day: '2-digit'
     });
 
-    const now = Date.now();
+    const now = calendarSeed;
     for (let i = 0; i < 30; i++) {
       const timeInIst = now + i * 24 * 60 * 60 * 1000;
       const d = new Date(timeInIst);
@@ -61,7 +63,7 @@ export default function BookingWidget({ onBackToHome }) {
       });
     }
     return dates;
-  }, []);
+  }, [calendarSeed]);
 
   // System states
   const [selectedDateIso, setSelectedDateIso] = useState(calendarDates[0].isoString);
@@ -230,6 +232,11 @@ export default function BookingWidget({ onBackToHome }) {
   const handleProceedToPayment = (e) => {
     e.preventDefault();
     setError('');
+
+    if (selectedSlots.length === 0) {
+      setError('Please select at least one upcoming slot.');
+      return;
+    }
     
     if (!name || name.trim().length < 2) {
       setError('Please enter a valid Customer Name (minimum 2 characters).');
@@ -250,6 +257,12 @@ export default function BookingWidget({ onBackToHome }) {
   const handleUpiSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (selectedSlots.length === 0) {
+      setError('Please select at least one upcoming slot.');
+      setStep(1);
+      return;
+    }
 
     const cleanedUTR = transactionId.trim();
     const utrRegex = /^\d{12}$/;
@@ -303,6 +316,13 @@ export default function BookingWidget({ onBackToHome }) {
   // 10. Razorpay Gateway payment execution
   const handleRazorpayPayment = async () => {
     setError('');
+
+    if (selectedSlots.length === 0) {
+      setError('Please select at least one upcoming slot.');
+      setStep(1);
+      return;
+    }
+
     setCheckoutStatus('processing');
     setProcessingStep('Creating Razorpay order...');
 
@@ -715,7 +735,7 @@ export default function BookingWidget({ onBackToHome }) {
                     </div>
                   ) : filteredSlots.length === 0 && !loading ? (
                     <div className="flex-1 py-16 flex items-center justify-center text-xs text-slate-455 font-bold">
-                      No matches available in the "{selectedCategory}" time slot. Try another category filter.
+                      No matches available in the &quot;{selectedCategory}&quot; time slot. Try another category filter.
                     </div>
                   ) : (
                     <div className="relative w-full">

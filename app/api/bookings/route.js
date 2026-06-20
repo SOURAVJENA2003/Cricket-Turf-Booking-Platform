@@ -2,7 +2,6 @@ import db from '@/lib/db';
 const { query } = db;
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { formatLocalDateString } from '@/lib/date-utils';
 
 export async function POST(request) {
   try {
@@ -71,24 +70,11 @@ export async function POST(request) {
       return NextResponse.json({ success: false, message: 'Some slots were not found in the database.' }, { status: 404 });
     }
 
-    // 8. Prevent Booking Past Slots
-    const now = new Date();
+    // 8. Prevent duplicate booking on already-booked slots
     for (const slot of slotCheck.rows) {
       if (slot.is_booked) {
         await query('ROLLBACK');
         return NextResponse.json({ success: false, message: `Slot starting at ${slot.start_time} is already booked.` }, { status: 400 });
-      }
-
-      // Convert slot date/time to absolute IST timestamp (UTC +05:30)
-      const cleanDateStr = typeof slot.date === 'string' 
-        ? slot.date.split('T')[0] 
-        : slot.date.toISOString().split('T')[0];
-      const slotIsoStr = `${cleanDateStr}T${slot.start_time}:00+05:30`;
-      const slotDateTime = new Date(slotIsoStr);
-
-      if (slotDateTime < now) {
-        await query('ROLLBACK');
-        return NextResponse.json({ success: false, message: `Cannot book slots in the past (Slot: ${slot.start_time} on ${formatLocalDateString(slot.date)}).` }, { status: 400 });
       }
     }
 
