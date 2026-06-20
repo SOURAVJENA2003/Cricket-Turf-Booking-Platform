@@ -1,0 +1,126 @@
+/* Card Component — Premium Blue + Green Design System */
+
+.card {
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-lg);
+  transition: all var(--transition-base);
+  display: flex;
+  flex-direction: column;
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ============================================================================
+   VARIANTS
+   ============================================================================ */
+
+/* Default variant — Clean, subtle */
+.default {
+  box-shadow: var(--shadow-sm);
+}
+
+.default:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Elevated variant — More prominent */
+.elevated {
+  box-shadow: var(--shadow-md);
+  border: 1px solid transparent;
+}
+
+.elevated:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Outlined variant — More definition */
+.outlined {
+  box-shadow: none;
+  border: 2px solid var(--color-border);
+  background-color: var(--color-card-bg);
+}
+
+.outlined:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Primary variant — Branded accent */
+.primary {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.primary:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-dark);
+}
+
+/* Success variant — Positive feedback */
+.success {
+  background-color: #ECFDF5;
+  border-color: var(--color-success);
+  box-shadow: var(--shadow-sm);
+}
+
+.success:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #059669;
+}
+
+/* Warning variant — Caution */
+.warning {
+  background-color: #FFFBEB;
+  border-color: var(--color-warning);
+  box-shadow: var(--shadow-sm);
+}
+
+.warning:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #D97706;
+}
+
+/* Error variant — Negative feedback */
+.error {
+  background-color: #FEF2F2;
+  border-color: var(--color-error);
+  box-shadow: var(--shadow-sm);
+}
+
+.error:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #B91C1C;
+}
+
+/* ============================================================================
+   INTERACTIVE STATE
+   ============================================================================ */
+
+.interactive {
+  cursor: pointer;
+}
+
+.interactive:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.interactive:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* ============================================================================
+   MOBILE RESPONSIVENESS
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .card {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+  }
+}

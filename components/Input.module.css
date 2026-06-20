@@ -1,0 +1,83 @@
+/* Input Component — Premium Blue + Green Design System */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.label {
+  font-family: var(--font-heading);
+  font-size: var(--label-size);
+  font-weight: var(--label-weight);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: var(--label-letter-spacing);
+}
+
+.required {
+  color: var(--color-error);
+  margin-left: 2px;
+}
+
+.input {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--body-size);
+  font-weight: var(--body-weight);
+  color: var(--color-text-primary);
+  background-color: var(--color-card-bg);
+  transition: all var(--transition-base);
+  min-height: 44px;
+}
+
+.input::placeholder {
+  color: var(--color-text-light);
+}
+
+.input:hover:not(:disabled) {
+  border-color: var(--color-border);
+  background-color: #F8FCFD;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background-color: var(--color-card-bg);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.input:disabled {
+  background-color: #F3F4F6;
+  color: var(--color-text-light);
+  cursor: not-allowed;
+}
+
+.input.error {
+  border-color: var(--color-error);
+  background-color: #FEF2F2;
+}
+
+.input.error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.errorMessage {
+  font-size: var(--body-small-size);
+  color: var(--color-error);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* ============================================================================
+   MOBILE RESPONSIVENESS
+   ============================================================================ */
+
+@media (max-width: 640px) {
+  .input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 40px;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
