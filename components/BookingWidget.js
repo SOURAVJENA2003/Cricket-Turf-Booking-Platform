@@ -763,7 +763,7 @@ export default function BookingWidget({ onBackToHome }) {
                               onClick={() => handleSlotClick(slot)}
                               className={`group relative p-4 rounded-2xl border-2 transition-all duration-300 flex flex-col justify-between items-start cursor-pointer min-h-[90px] overflow-hidden ${
                                 isBooked
-                                  ? 'bg-slate-50 border-slate-200 text-slate-350 pointer-events-none'
+                                  ? 'bg-rose-50/80 border-rose-200 text-slate-500 pointer-events-none opacity-80'
                                   : isSelected
                                     ? 'bg-emerald-650 border-emerald-600 text-white shadow-brand-glow scale-[1.02]'
                                     : 'bg-white border-slate-200 hover:border-emerald-500/30 text-pitch-charcoal hover:shadow-premium-soft'
@@ -772,7 +772,7 @@ export default function BookingWidget({ onBackToHome }) {
                               {/* Selection state badge */}
                               <div className="absolute top-3.5 right-3.5">
                                 {isBooked ? (
-                                  <span className="text-[7px] font-black tracking-widest text-slate-400 bg-slate-200/50 px-1.5 py-0.5 rounded uppercase">Locked</span>
+                                  <span className="text-[9px] font-black tracking-[0.22em] text-rose-700 bg-white border border-rose-200 px-2.5 py-1 rounded-full uppercase shadow-2xs">Booked</span>
                                 ) : isSelected ? (
                                   <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-3xs">
                                     <Check className="w-2.5 h-2.5 text-emerald-600 stroke-[3.5]" />
@@ -782,19 +782,19 @@ export default function BookingWidget({ onBackToHome }) {
                                 )}
                               </div>
 
-                              <span className="text-sm sm:text-base font-display font-extrabold tracking-tight mt-1">
+                              <span className={`text-sm sm:text-base font-display font-extrabold tracking-tight mt-1 ${isBooked ? 'text-slate-500 line-through decoration-rose-300/90' : ''}`}>
                                 {slot.start_time.slice(0, 5)} - {slot.end_time.slice(0, 5)}
                               </span>
                               
                               <div className="w-full flex items-center justify-between text-[9px] font-bold uppercase tracking-wider mt-3">
-                                <span className={isSelected ? 'text-emerald-100' : 'text-slate-400'}>
+                                <span className={isSelected ? 'text-emerald-100' : isBooked ? 'text-rose-600' : 'text-slate-400'}>
                                   {slot.category === 'Morning' && '🌅 '}
                                   {slot.category === 'Afternoon' && '☀️ '}
                                   {slot.category === 'Evening' && '🌇 '}
                                   {slot.category === 'Night' && '🌃 '}
                                   {slot.category}
                                 </span>
-                                <span className={isSelected ? 'text-white' : 'text-slate-655 font-extrabold'}>
+                                <span className={isSelected ? 'text-white' : isBooked ? 'text-rose-700 font-extrabold' : 'text-slate-655 font-extrabold'}>
                                   ₹{slot.price}
                                 </span>
                               </div>
