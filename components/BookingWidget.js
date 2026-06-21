@@ -222,11 +222,16 @@ export default function BookingWidget({ onBackToHome }) {
   // 7. Pricing Summary calculations
   const priceCalculation = useMemo(() => {
     const totalAmount = selectedSlots.reduce((sum, slot) => sum + parseFloat(slot.price), 0);
+    const advancePriceConfig = parseFloat(config?.advanceBookingPrice || '100.00');
+    const advanceTotal = Math.min(advancePriceConfig, totalAmount);
+    const offlineTotal = Math.max(0, totalAmount - advanceTotal);
     return {
       finalTotal: totalAmount,
+      advanceTotal: advanceTotal,
+      offlineTotal: offlineTotal,
       hourCount: selectedSlots.length
     };
-  }, [selectedSlots]);
+  }, [selectedSlots, config]);
 
   // 8. Details form submission validation
   const handleProceedToPayment = (e) => {
@@ -300,6 +305,8 @@ export default function BookingWidget({ onBackToHome }) {
             slots: selectedSlots.map(s => `${s.start_time.slice(0, 5)} - ${s.end_time.slice(0, 5)}`),
             accessPin: randomPin,
             price: priceCalculation.finalTotal,
+            advancePaid: priceCalculation.advanceTotal,
+            offlinePending: priceCalculation.offlineTotal,
           });
           setCheckoutStatus('done');
         }, 1200);
@@ -381,6 +388,8 @@ export default function BookingWidget({ onBackToHome }) {
                 slots: selectedSlots.map(s => `${s.start_time.slice(0, 5)} - ${s.end_time.slice(0, 5)}`),
                 accessPin: randomPin,
                 price: priceCalculation.finalTotal,
+                advancePaid: priceCalculation.advanceTotal,
+                offlinePending: priceCalculation.offlineTotal,
               });
               setCheckoutStatus('done');
             } else {
@@ -433,7 +442,7 @@ export default function BookingWidget({ onBackToHome }) {
   // UPI URL for QR code generation
   const upiId = config?.upiDetails?.id || config?.id || "owner@upi";
   const upiName = config?.upiDetails?.name || config?.name || "Turf Owner";
-  const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${priceCalculation.finalTotal}&cu=INR&tn=Booking for ${selectedDateIso}`;
+  const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(upiName)}&am=${priceCalculation.advanceTotal}&cu=INR&tn=Booking for ${selectedDateIso}`;
   const turfName = turfDetails?.name || "Runmakers Arena Box Cricket";
 
   const steps = [
@@ -604,11 +613,27 @@ export default function BookingWidget({ onBackToHome }) {
 
                 {/* Receipt invoice footer section */}
                 <div className="p-6 border-t border-slate-200 bg-slate-50/50 rounded-b-[2.5rem] flex flex-col items-center space-y-4">
-                  <div className="w-full flex justify-between items-baseline text-xs">
-                    <span className="font-extrabold text-slate-400 uppercase text-[9px] tracking-wider">
-                      UTR Status: {config?.paymentMode === 'razorpay' ? 'PAID' : 'PENDING VERIFICATION'}
-                    </span>
-                    <strong className="text-lg font-display font-black text-pitch-charcoal">₹{generatedTicket.price}</strong>
+                  <div className="w-full flex flex-col space-y-1.5 text-xs text-left">
+                    <div className="flex justify-between items-baseline">
+                      <span className="font-extrabold text-slate-400 uppercase text-[9px] tracking-wider">
+                        Total Rent
+                      </span>
+                      <strong className="text-sm font-display font-black text-pitch-charcoal">₹{generatedTicket.price}</strong>
+                    </div>
+                    <div className="flex justify-between items-baseline text-emerald-800">
+                      <span className="font-extrabold text-slate-400 uppercase text-[9px] tracking-wider">
+                        Advance paid ({config?.paymentMode === 'razorpay' ? 'ONLINE' : 'UPI PENDING'})
+                      </span>
+                      <strong className="text-sm font-display font-black">₹{generatedTicket.advancePaid}</strong>
+                    </div>
+                    {generatedTicket.offlinePending > 0 && (
+                      <div className="flex justify-between items-baseline text-amber-800 border-t border-dashed border-slate-200 pt-1.5 mt-0.5">
+                        <span className="font-extrabold text-slate-400 uppercase text-[9px] tracking-wider">
+                          Balance Due (Pay Offline)
+                        </span>
+                        <strong className="text-sm font-display font-black font-mono">₹{generatedTicket.offlinePending}</strong>
+                      </div>
+                    )}
                   </div>
 
                   {/* SVG Check-in QR code */}
@@ -842,6 +867,7 @@ export default function BookingWidget({ onBackToHome }) {
                           <p className="text-xl sm:text-2xl font-display font-black text-pitch-charcoal leading-none mt-0.5">
                             ₹{priceCalculation.finalTotal}
                           </p>
+                          <span className="text-[9px] font-bold text-emerald-850 block mt-0.5">Advance deposit: ₹{priceCalculation.advanceTotal}</span>
                         </div>
                         
                         <button
@@ -936,9 +962,21 @@ export default function BookingWidget({ onBackToHome }) {
                     </div>
                   </div>
 
-                  <div className="pt-3.5 border-t border-slate-200/45 flex justify-between items-baseline">
-                    <span className="text-xs font-extrabold text-slate-550">Total Amount Due</span>
-                    <span className="text-xl font-display font-black text-pitch-charcoal">₹{priceCalculation.finalTotal}</span>
+                  <div className="pt-3.5 border-t border-slate-200/45 space-y-1.5 font-sans">
+                    <div className="flex justify-between items-baseline text-xs">
+                      <span className="font-bold text-slate-550">Total Rent Amount</span>
+                      <span className="font-semibold text-pitch-charcoal">₹{priceCalculation.finalTotal}</span>
+                    </div>
+                    <div className="flex justify-between items-baseline text-xs text-emerald-800 font-bold">
+                      <span>Advance to Pay Now</span>
+                      <span>₹{priceCalculation.advanceTotal}</span>
+                    </div>
+                    {priceCalculation.offlineTotal > 0 && (
+                      <div className="flex justify-between items-baseline text-xs text-amber-800 font-bold border-t border-dashed border-slate-200 pt-1.5 mt-0.5 font-mono">
+                        <span>Balance (Pay Offline later)</span>
+                        <span>₹{priceCalculation.offlineTotal}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -991,9 +1029,21 @@ export default function BookingWidget({ onBackToHome }) {
                       <span className="text-xs font-bold text-slate-500">Selected Slots</span>
                       <span className="text-xs font-extrabold text-pitch-charcoal">{selectedSlots.length} Hour(s)</span>
                     </div>
-                    <div className="pt-3 border-t border-slate-200/40 flex justify-between items-baseline">
-                      <span className="text-xs font-extrabold text-slate-550">Total Payable</span>
-                      <span className="text-xl font-display font-black text-pitch-charcoal">₹{priceCalculation.finalTotal}</span>
+                    <div className="pt-3 border-t border-slate-200/40 space-y-1.5">
+                      <div className="flex justify-between items-baseline text-xs">
+                        <span className="font-bold text-slate-550">Total Turf Rent</span>
+                        <span className="font-semibold text-pitch-charcoal">₹{priceCalculation.finalTotal}</span>
+                      </div>
+                      <div className="flex justify-between items-baseline text-xs text-emerald-800 font-bold">
+                        <span>Advance to Pay Now</span>
+                        <span className="text-base">₹{priceCalculation.advanceTotal}</span>
+                      </div>
+                      {priceCalculation.offlineTotal > 0 && (
+                        <div className="flex justify-between items-baseline text-xs text-amber-800 font-bold border-t border-dashed border-slate-200 pt-1.5 mt-0.5">
+                          <span>Balance (Pay Offline)</span>
+                          <span className="font-mono">₹{priceCalculation.offlineTotal}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1052,18 +1102,23 @@ export default function BookingWidget({ onBackToHome }) {
                       </div>
 
                       <div className="space-y-1">
-                        <span className="text-[9px] font-bold text-slate-400 uppercase block">Amount Due</span>
+                        <span className="text-[9px] font-bold text-slate-400 uppercase block">Amount Due (Advance)</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-base font-display font-black text-emerald-800 block">₹{priceCalculation.finalTotal}</span>
+                          <span className="text-base font-display font-black text-emerald-800 block">₹{priceCalculation.advanceTotal}</span>
                           <button
                             type="button"
-                            onClick={() => copyToClipboard(priceCalculation.finalTotal.toString())}
+                            onClick={() => copyToClipboard(priceCalculation.advanceTotal.toString())}
                             className="text-slate-400 hover:text-emerald-600 transition-colors p-1 bg-white border border-slate-200 rounded shadow-3xs cursor-pointer"
                             title="Copy Amount"
                           >
                             <Copy className="w-3 h-3" />
                           </button>
                         </div>
+                        {priceCalculation.offlineTotal > 0 && (
+                          <span className="text-[9px] text-amber-800 font-bold block mt-1">
+                            Pay remaining ₹{priceCalculation.offlineTotal} offline at turf.
+                          </span>
+                        )}
                       </div>
                       
                       {copySuccess && (

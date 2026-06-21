@@ -52,9 +52,17 @@ export async function POST(request) {
         }
       }
 
-      // Compute total price
+      // Retrieve advance booking price from settings
+      const settingsResult = await query('SELECT advance_booking_price FROM settings WHERE id = 1');
+      let advancePrice = 100.00;
+      if (settingsResult.rows.length > 0) {
+        advancePrice = parseFloat(settingsResult.rows[0].advance_booking_price);
+      }
+
+      // Compute total price and charge the smaller of total price or advance price
       const totalPrice = slotsResult.rows.reduce((sum, s) => sum + parseFloat(s.price), 0);
-      const amountInPaise = Math.round(totalPrice * 100);
+      const finalAdvancePrice = Math.min(advancePrice, totalPrice);
+      const amountInPaise = Math.round(finalAdvancePrice * 100);
 
       // Create Razorpay Order
       const order = await razorpay.orders.create({

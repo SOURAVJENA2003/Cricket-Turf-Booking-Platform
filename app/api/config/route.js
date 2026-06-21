@@ -14,6 +14,7 @@ export async function GET() {
     const configData = {
       paymentMode,
       bookingEnabled: s.booking_enabled,
+      advanceBookingPrice: parseFloat(s.advance_booking_price || '100.00'),
       turfDetails: {
         name: s.turf_name,
         address: s.turf_address,

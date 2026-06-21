@@ -44,6 +44,7 @@ async function initDb() {
         opening_time VARCHAR(5) NOT NULL DEFAULT '06:00',
         closing_time VARCHAR(5) NOT NULL DEFAULT '23:00',
         default_slot_price DECIMAL(10, 2) NOT NULL DEFAULT 1000.00,
+        advance_booking_price DECIMAL(10, 2) NOT NULL DEFAULT 100.00,
         upi_id VARCHAR(255) NOT NULL DEFAULT 'owner@upi',
         upi_name VARCHAR(255) NOT NULL DEFAULT 'Turf Owner',
         payment_mode VARCHAR(20) NOT NULL DEFAULT 'upi',

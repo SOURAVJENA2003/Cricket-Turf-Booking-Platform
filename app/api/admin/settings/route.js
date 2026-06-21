@@ -47,6 +47,7 @@ export async function PUT(request) {
       openingTime,
       closingTime,
       defaultSlotPrice,
+      advanceBookingPrice,
       upiId,
       upiName,
       paymentMode,
@@ -59,7 +60,7 @@ export async function PUT(request) {
     } = body;
 
     // Validation
-    if (!turfName || !turfAddress || !turfGoogleMaps || !openingTime || !closingTime || defaultSlotPrice === undefined || !upiId || !upiName || !paymentMode) {
+    if (!turfName || !turfAddress || !turfGoogleMaps || !openingTime || !closingTime || defaultSlotPrice === undefined || advanceBookingPrice === undefined || !upiId || !upiName || !paymentMode) {
       return NextResponse.json({ success: false, message: 'Missing required configuration fields' }, { status: 400 });
     }
 
@@ -71,6 +72,10 @@ export async function PUT(request) {
 
     if (isNaN(parseFloat(defaultSlotPrice)) || parseFloat(defaultSlotPrice) < 0) {
       return NextResponse.json({ success: false, message: 'Default slot price must be a valid positive number' }, { status: 400 });
+    }
+
+    if (isNaN(parseFloat(advanceBookingPrice)) || parseFloat(advanceBookingPrice) < 0) {
+      return NextResponse.json({ success: false, message: 'Advance booking price must be a valid positive number' }, { status: 400 });
     }
 
     if (paymentMode !== 'upi' && paymentMode !== 'razorpay') {
@@ -97,6 +102,7 @@ export async function PUT(request) {
            turf_banner_url = $15,
            whatsapp_number = $16,
            instagram_url = $17,
+           advance_booking_price = $18,
            updated_at = CURRENT_TIMESTAMP
        WHERE id = 1`,
       [
@@ -116,7 +122,8 @@ export async function PUT(request) {
         turfLogoUrl || null,
         turfBannerUrl || null,
         whatsappNumber || null,
-        instagramUrl || null
+        instagramUrl || null,
+        parseFloat(advanceBookingPrice)
       ]
     );
 

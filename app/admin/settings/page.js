@@ -22,6 +22,7 @@ export default function AdminSettingsPage() {
   const [openingTime, setOpeningTime] = useState('06:00');
   const [closingTime, setClosingTime] = useState('23:00');
   const [defaultSlotPrice, setDefaultSlotPrice] = useState('1000.00');
+  const [advanceBookingPrice, setAdvanceBookingPrice] = useState('100.00');
   const [paymentMode, setPaymentMode] = useState('upi');
   const [upiId, setUpiId] = useState('');
   const [upiName, setUpiName] = useState('');
@@ -52,6 +53,7 @@ export default function AdminSettingsPage() {
           setOpeningTime(s.opening_time || '06:00');
           setClosingTime(s.closing_time || '23:00');
           setDefaultSlotPrice(s.default_slot_price || '1000.00');
+          setAdvanceBookingPrice(s.advance_booking_price || '100.00');
           setPaymentMode(s.payment_mode || 'upi');
           setUpiId(s.upi_id || '');
           setUpiName(s.upi_name || '');
@@ -92,6 +94,7 @@ export default function AdminSettingsPage() {
           openingTime,
           closingTime,
           defaultSlotPrice: parseFloat(defaultSlotPrice),
+          advanceBookingPrice: parseFloat(advanceBookingPrice),
           upiId,
           upiName,
           paymentMode,
@@ -254,16 +257,29 @@ export default function AdminSettingsPage() {
                     />
                   </div>
                 </div>
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] font-black uppercase text-slate-400">Default Price per Hour (₹)</label>
-                  <input 
-                    type="number" 
-                    value={defaultSlotPrice} 
-                    onChange={(e) => setDefaultSlotPrice(e.target.value)} 
-                    step="0.01" 
-                    required 
-                    className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Default Price per Hour (₹)</label>
+                    <input 
+                      type="number" 
+                      value={defaultSlotPrice} 
+                      onChange={(e) => setDefaultSlotPrice(e.target.value)} 
+                      step="0.01" 
+                      required 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] font-black uppercase text-slate-400">Advance Payment Price (₹)</label>
+                    <input 
+                      type="number" 
+                      value={advanceBookingPrice} 
+                      onChange={(e) => setAdvanceBookingPrice(e.target.value)} 
+                      step="0.01" 
+                      required 
+                      className="p-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:border-emerald-500 shadow-2xs w-full font-mono" 
+                    />
+                  </div>
                 </div>
               </div>
             </div>
