@@ -2,6 +2,7 @@ import db from '@/lib/db';
 const { query } = db;
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { isCancellable } from '@/lib/date-utils';
 
 export async function POST(request) {
   try {
@@ -120,13 +121,27 @@ export async function DELETE(request) {
     // Verify bookings
     const placeholders = bookingIds.map((_, i) => `$${i + 1}`).join(',');
     const bookings = await query(
-      `SELECT id, slot_id FROM bookings WHERE id IN (${placeholders}) AND phone = $${bookingIds.length + 1}`,
+      `SELECT b.id, b.slot_id, s.date, s.start_time 
+       FROM bookings b
+       JOIN slots s ON b.slot_id = s.id
+       WHERE b.id IN (${placeholders}) AND b.phone = $${bookingIds.length + 1}`,
       [...bookingIds, phone]
     );
 
     if (bookings.rows.length !== bookingIds.length) {
       await query('ROLLBACK');
       return NextResponse.json({ success: false, message: 'Some bookings were not found or incorrect phone number' }, { status: 404 });
+    }
+
+    // Check cancellation deadline (6 hours before start time)
+    for (const booking of bookings.rows) {
+      if (!isCancellable(booking.date, booking.start_time)) {
+        await query('ROLLBACK');
+        return NextResponse.json({ 
+          success: false, 
+          message: `Booking for slot starting at ${booking.start_time.slice(0, 5)} on ${booking.date} cannot be cancelled because it is within 6 hours of the slot start time.` 
+        }, { status: 400 });
+      }
     }
 
     // Soft-cancel bookings by updating status to 'cancelled'

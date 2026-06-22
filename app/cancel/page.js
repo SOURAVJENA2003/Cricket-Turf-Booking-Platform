@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { formatLocalDateString } from '@/lib/date-utils';
-import { Trash2, ShieldAlert, ArrowLeft, Search, CheckCircle } from 'lucide-react';
+import { formatLocalDateString, isCancellable } from '@/lib/date-utils';
+import { Trash2, ShieldAlert, ArrowLeft, Search, CheckCircle, X } from 'lucide-react';
 
 export default function CancelPage() {
   const [groupId, setGroupId] = useState('');
@@ -154,28 +154,48 @@ export default function CancelPage() {
             <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
               {bookings.map((booking) => {
                 const isSelected = selectedBookings.includes(booking.booking_id);
+                const cancellable = isCancellable(booking.date, booking.start_time);
                 return (
                   <div 
                     key={booking.booking_id} 
-                    className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between shadow-2xs select-none ${
-                      isSelected
-                        ? 'border-emerald-500 bg-emerald-50/20'
-                        : 'border-slate-200/60 bg-white/60 hover:bg-white/90 backdrop-blur-xs hover:border-slate-350'
+                    className={`p-3 rounded-xl border transition-all flex items-center justify-between shadow-2xs select-none ${
+                      !cancellable
+                        ? 'border-slate-200/40 bg-slate-100/40 opacity-60 cursor-not-allowed'
+                        : isSelected
+                          ? 'border-emerald-500 bg-emerald-50/20 cursor-pointer'
+                          : 'border-slate-200/60 bg-white/60 hover:bg-white/90 backdrop-blur-xs hover:border-slate-350 cursor-pointer'
                     }`}
-                    onClick={() => toggleSelection(booking.booking_id)}
+                    onClick={() => cancellable && toggleSelection(booking.booking_id)}
                   >
                     <div className="flex items-center space-x-3 text-left">
-                      <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
-                        isSelected ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 bg-white'
-                      }`}>
-                        {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
-                      </div>
+                      {cancellable ? (
+                        <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${
+                          isSelected ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 bg-white'
+                        }`}>
+                          {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                        </div>
+                      ) : (
+                        <div className="w-4 h-4 rounded-md border border-slate-200 bg-slate-100 flex items-center justify-center text-slate-400 select-none">
+                          <X className="w-3.5 h-3.5 text-slate-400" />
+                        </div>
+                      )}
                       <div className="text-xs">
-                        <strong className="text-pitch-charcoal block">{booking.start_time.slice(0, 5)} - {booking.end_time.slice(0, 5)}</strong>
+                        <strong className={`block ${!cancellable ? 'text-slate-400 line-through' : 'text-pitch-charcoal'}`}>
+                          {booking.start_time.slice(0, 5)} - {booking.end_time.slice(0, 5)}
+                        </strong>
                         <span className="text-[10px] text-slate-400 font-mono">{formatLocalDateString(booking.date)}</span>
                       </div>
                     </div>
-                    <div className="text-xs font-mono font-black text-pitch-charcoal">₹{parseFloat(booking.price)}</div>
+                    <div className="flex flex-col items-end gap-1">
+                      <div className={`text-xs font-mono font-black ${!cancellable ? 'text-slate-400' : 'text-pitch-charcoal'}`}>
+                        ₹{parseFloat(booking.price)}
+                      </div>
+                      {!cancellable && (
+                        <span className="text-[8px] font-black uppercase bg-red-50 text-red-700 px-1.5 py-0.5 rounded border border-red-100 leading-none">
+                          Within 6hrs limit
+                        </span>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -187,7 +207,7 @@ export default function CancelPage() {
             <div className="p-3 bg-amber-50/50 border border-amber-150 rounded-xl text-[10px] text-amber-900 flex items-start gap-2 leading-relaxed">
               <ShieldAlert className="w-4 h-4 text-amber-700 flex-shrink-0 mt-0.5" />
               <div>
-                <strong>Cancellation Policy:</strong> Slot cancellations release timings immediately back to the pool. Refund approvals are subject to admin review.
+                <strong>Cancellation Policy:</strong> Bookings can only be cancelled/refunded at least <strong>6 hours</strong> prior to the slot&apos;s scheduled start time. Cancellations release slots immediately. Refunds are processed manually after admin validation.
               </div>
             </div>
 
