@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import db from '@/lib/db';
 const { query } = db;
 
+// GET handler to retrieve public turf configurations and settings
 export async function GET() {
   try {
     const result = await query('SELECT * FROM settings WHERE id = 1');

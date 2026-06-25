@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client } = require('pg');
 const { query } = require('../lib/db');
 
+// Main database initialization script to create tables and database schema
 async function initDb() {
   // First, connect to default 'postgres' database to create the new database
   const connectionString = process.env.DATABASE_URL;
